@@ -13,10 +13,10 @@
 
 <br>
 
-[![Website](https://img.shields.io/badge/konkred.xyz-D98A2E?style=flat-square&labelColor=0B0F14&logoColor=D7D9DD)](https://konkred.xyz)
-[![Email](https://img.shields.io/badge/ari@konkred.xyz-D7D9DD?style=flat-square&labelColor=0B0F14)](mailto:ari@konkred.xyz)
-[![Remote](https://img.shields.io/badge/OPEN%20TO%20REMOTE-0B0F14?style=flat-square&labelColor=0B0F14&color=1A212B)](mailto:ari@konkred.xyz)
-[![Profile](https://img.shields.io/badge/INTERACTIVE%20PROFILE-0B0F14?style=flat-square&labelColor=0B0F14&color=1A212B)](https://rearbitra.github.io/reARbitRA/)
+<a href="https://konkred.xyz"><img src="./assets/badge-site.svg" alt="konkred.xyz" height="30"></a>
+<a href="mailto:ari@konkred.xyz"><img src="./assets/badge-email.svg" alt="ari@konkred.xyz" height="30"></a>
+<a href="mailto:ari@konkred.xyz"><img src="./assets/badge-remote.svg" alt="Open to remote" height="30"></a>
+<a href="https://rearbitra.github.io/reARbitRA/"><img src="./assets/badge-profile.svg" alt="Interactive profile" height="30"></a>
 
 </div>
 

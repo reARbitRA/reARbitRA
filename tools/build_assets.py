@@ -24,6 +24,8 @@ Usage:  python3 tools/build_assets.py
 import math
 import os
 
+import fontpack
+
 # --------------------------------------------------------------------------
 # Brand tokens - Brand System v2, sections 03 and 07
 # --------------------------------------------------------------------------
@@ -42,8 +44,8 @@ SIGNAL    = "#D98A2E"   # accent - one element per composition
 WIRE      = "#7a7f88"   # interior wireframe
 WIRE2     = "#8a8f97"   # icon secondary
 
-MONO  = "ui-monospace,'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,'Liberation Mono',monospace"
-INTER = "Inter,'Segoe UI',system-ui,-apple-system,'Helvetica Neue',sans-serif"
+MONO  = "'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace"
+INTER = "'Inter','Segoe UI',system-ui,-apple-system,'Helvetica Neue',sans-serif"
 
 OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "assets")
 
@@ -251,7 +253,7 @@ def head(w, h, title, desc, css, defs=""):
         f'aria-labelledby="t d">'
         f'<title id="t">{esc(title)}</title><desc id="d">{esc(desc)}</desc>'
         f'<defs>{defs}</defs>'
-        f'<style>{motion(css)}</style>'
+        f'<style>@@FONTS@@{motion(css)}</style>'
     )
 
 
@@ -276,8 +278,46 @@ def crops(w, h, m=14, l=12, op=".55"):
     return "".join(o)
 
 
+# Characters drawn per embedded face, accumulated while a document is built
+# so each SVG only carries the glyphs it actually renders.
+USED = {}
+
+
+def reset_used():
+    USED.clear()
+
+
+def _note(family, weight, s):
+    if family == INTER:
+        key = "inter400"
+    else:
+        key = "plex" + ("600" if weight == "600" else "500" if weight == "500" else "400")
+    USED.setdefault(key, set()).update(s)
+
+
+# IBM Plex Mono is monospaced at exactly 0.6em per advance (verified against
+# the shipped font: unitsPerEm 1000, advance 600). That makes mono text width
+# exactly computable, so positions next to text are derived instead of guessed.
+MONO_ADV = 0.6
+
+
+def mono_w(s, size, ls=0.0):
+    """Rendered width of `s` in Plex Mono at `size` with `ls` letter-spacing."""
+    if not s:
+        return 0.0
+    return len(s) * size * MONO_ADV + max(0, len(s) - 1) * ls
+
+
+def fit_size(s, size, maxw, ls=0.0, minsize=8.0):
+    """Largest font size <= `size` at which `s` fits `maxw` (mono text)."""
+    while size > minsize and mono_w(s, size, ls) > maxw:
+        size -= 0.25
+    return round(size, 2)
+
+
 def txt(x, y, s, size=13, fill=CLINICAL, family=MONO, weight="400",
         ls=None, anchor="start", cls="", extra=""):
+    _note(family, str(weight), s)
     a = f' letter-spacing="{ls}"' if ls is not None else ""
     c = f' class="{cls}"' if cls else ""
     return (f'<text{c} x="{x}" y="{y}" font-family="{family}" font-size="{size}" '
@@ -368,8 +408,10 @@ def build_header():
 
     # terminal caret line
     o.append(f'<g class="rise r5">')
-    o.append(txt(x, 320, "$ status --remote --stack ai", 10.5, MID, MONO, "400", "1.2"))
-    o.append(f'<rect class="caret" x="{x+178}" y="311" width="6" height="11" fill="{SIGNAL}"/>')
+    cmd = "$ status --remote --stack ai"
+    o.append(txt(x, 320, cmd, 10.5, MID, MONO, "400", "1.2"))
+    o.append(f'<rect class="caret" x="{x + mono_w(cmd, 10.5, 1.2) + 4:.1f}" y="311" '
+             f'width="6" height="11" fill="{SIGNAL}"/>')
     o.append('</g>')
 
     o.append('</svg>')
@@ -500,7 +542,7 @@ def build_stack():
     for name, items in groups:
         rows, cur, curw = [], [], 0
         for it in items:
-            iw = int(len(it) * 6.15) + pad * 2
+            iw = int(round(mono_w(it, 11) + pad * 2))
             if curw + iw > colw and cur:
                 rows.append(cur); cur, curw = [], 0
             cur.append((it, iw)); curw += iw + pgap
@@ -558,11 +600,11 @@ def build_stack():
 # ==========================================================================
 def build_metrics():
     stats = [
-        ("500+", "ENTERPRISE PROMPTS", "engineered, licensed, documented"),
+        ("500+", "ENTERPRISE PROMPTS", "engineered & licensed"),
         ("367", "RED-TEAM TECHNIQUES", "catalogued and typed"),
         ("70%", "COST REDUCTION", "$20k to $6k infrastructure"),
         ("20+", "MANUSCRIPTS", "AI, security, quantum"),
-        ("04", "PRODUCTS SHIPPED", "audit · suite · redeye · arbitra"),
+        ("04", "PRODUCTS SHIPPED", "audit · redeye · arbitra"),
     ]
     gap = 16
     n = len(stats)
@@ -592,8 +634,8 @@ def build_metrics():
         o.append(txt(20, 78, val, 40, CONC_LT, MONO, "600", "-0.5"))
         o.append(f'<rect class="bar" x="20" y="92" width="{cw-40}" height="2" fill="{SIGNAL}" '
                  f'style="animation-delay:{d+0.25:.2f}s" opacity=".8"/>')
-        o.append(txt(20, 116, lab, 10.5, CLINICAL, MONO, "500", "1.6"))
-        o.append(txt(20, 134, sub, 10, MID, MONO, "400", "0.4"))
+        o.append(txt(20, 116, lab, fit_size(lab, 10.5, cw - 40, 1.6), CLINICAL, MONO, "500", "1.6"))
+        o.append(txt(20, 134, sub, fit_size(sub, 10, cw - 40, 0.4), MID, MONO, "400", "0.4"))
         o.append('</g>')
 
     o.append('</svg>')
@@ -747,17 +789,67 @@ def build_mark():
 
 
 # ==========================================================================
+def render(fn):
+    """Run a builder and inline @font-face for only the glyphs it drew."""
+    reset_used()
+    svg = fn()
+    return svg.replace("@@FONTS@@", fontpack.face_css(USED))
+
+
+# ==========================================================================
+# 9. LINK BADGES
+# ==========================================================================
+def build_badge(label, accent=False):
+    """Brand-styled link badges.
+
+    Replaces shields.io: a third-party image would render in its own typeface
+    and palette, breaking the brand system, and adds an external dependency
+    to a README that otherwise has none.
+    """
+    size, ls, padx, h = 12.0, 1.2, 15, 30
+    w = int(round(mono_w(label, size, ls) + padx * 2 + (12 if accent else 0)))
+
+    css = """
+  .b { animation: bin .45s ease-out backwards; }
+  @keyframes bin { from { opacity:0; transform: translateY(5px); }
+                   to   { opacity:1; transform: translateY(0); } }
+  .bdot { animation: sig 2.4s ease-in-out infinite; }
+  @keyframes sig { 0%,100% { opacity:.35 } 50% { opacity:1 } }
+"""
+    o = [head(w, h, label, f"Link badge: {label}", css)]
+    o.append(f'<rect width="{w}" height="{h}" fill="{VOID}"/>')
+    o.append('<g class="b">')
+    o.append(f'<rect x=".5" y=".5" width="{w-1}" height="{h-1}" fill="{ROW}" '
+             f'stroke="{SIGNAL if accent else LINE2}" stroke-width="1" rx="2"/>')
+    if accent:
+        o.append(f'<circle class="bdot" cx="12" cy="{h/2}" r="3" fill="{SIGNAL}"/>')
+    col = SIGNAL if accent else CLINICAL
+    o.append(txt(w / 2 + (6 if accent else 0), h / 2 + 4.2, label, size, col,
+                 MONO, "500", ls, "middle"))
+    o.append('</g></svg>')
+    return "".join(o)
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
+    if not fontpack.available():
+        raise SystemExit(
+            "Brand fonts missing from tools/fonts/. Without them GitHub falls back "
+            "to a generic monospace and the brand typography is lost."
+        )
     files = {
-        "header.svg":   build_header(),
-        "products.svg": build_products(),
-        "stack.svg":    build_stack(),
-        "metrics.svg":  build_metrics(),
-        "timeline.svg": build_timeline(),
-        "divider.svg":  build_divider(),
-        "footer.svg":   build_footer(),
-        "cube-k.svg":   build_mark(),
+        "header.svg":   render(build_header),
+        "products.svg": render(build_products),
+        "stack.svg":    render(build_stack),
+        "metrics.svg":  render(build_metrics),
+        "timeline.svg": render(build_timeline),
+        "divider.svg":  render(build_divider),
+        "footer.svg":   render(build_footer),
+        "cube-k.svg":   render(build_mark),
+        "badge-site.svg":    render(lambda: build_badge("konkred.xyz", True)),
+        "badge-email.svg":   render(lambda: build_badge("ari@konkred.xyz")),
+        "badge-remote.svg":  render(lambda: build_badge("OPEN TO REMOTE")),
+        "badge-profile.svg": render(lambda: build_badge("INTERACTIVE PROFILE")),
     }
     for name, body in files.items():
         p = os.path.join(OUT, name)

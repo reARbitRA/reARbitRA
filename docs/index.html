@@ -9,22 +9,36 @@
 <meta property="og:title" content="Ari Miyanji — AI architect, R&amp;D, LLM security">
 <meta property="og:description" content="Concrete tools for abstract problems. AI architecture, LLM security, agent systems, AI economics.">
 <meta property="og:type" content="profile">
+<link rel="preload" href="fonts/plex-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="icon" href="./assets/cube-k.svg" type="image/svg+xml">
 <style>
 /* ==========================================================================
    KONKRED Brand System v2 — Void / Clinical / Signal Amber
-   Type: IBM Plex Mono (primary) + Inter (body)
+   Type: IBM Plex Mono (primary) + Inter (body) — SIL OFL, self-hosted.
+   Self-hosted rather than CDN-linked: the brand spec calls for no third-party
+   requests and no tracking, and a CDN font is a render-blocking dependency on
+   someone else's uptime. font-display:swap keeps first paint under budget.
    Motion: linear or ease-out only. No spring. No bounce.
-   Budget: no framework, no tracking, inline everything.
    ========================================================================== */
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:400;
+  src:url('fonts/plex-400.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;
+  src:url('fonts/plex-500.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:600;
+  src:url('fonts/plex-600.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'Inter';font-style:normal;font-weight:400;
+  src:url('fonts/inter-400.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'Inter';font-style:normal;font-weight:500;
+  src:url('fonts/inter-500.woff2') format('woff2');font-display:swap}
 :root{
   --void:#0B0F14; --card:#0E1319; --row:#0D1218;
   --line:#1A212B; --line2:#222B36; --line3:#2D3642;
   --muted:#9AA0A8; --mid:#6B717A;
   --clinical:#D7D9DD; --conc-lt:#E8E9EC; --conc-sh:#C4C7CC;
   --signal:#D98A2E; --wire:#7a7f88;
-  --mono:ui-monospace,'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,'Liberation Mono',monospace;
-  --inter:Inter,'Segoe UI',system-ui,-apple-system,'Helvetica Neue',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --inter:'Inter','Segoe UI',system-ui,-apple-system,'Helvetica Neue',sans-serif;
   --ease:cubic-bezier(.16,.68,.36,1);
 }
 *{margin:0;padding:0;box-sizing:border-box}
