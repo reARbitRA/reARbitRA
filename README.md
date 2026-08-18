@@ -17,7 +17,7 @@
 <a href="https://konkred.xyz"><img src="./assets/badge-site.svg" alt="konkred.xyz" height="30"></a>
 <a href="mailto:ari@konkred.xyz"><img src="./assets/badge-email.svg" alt="ari@konkred.xyz" height="30"></a>
 <a href="mailto:ari@konkred.xyz"><img src="./assets/badge-remote.svg" alt="Open to remote" height="30"></a>
-<a href="https://rearbitra.github.io/reARbitRA/"><img src="./assets/badge-profile.svg" alt="Interactive profile" height="30"></a>
+<a href="https://rearbitra.github.io/reARbitRA/"><img src="./assets/badge-profile.svg" alt="Research and Develope" height="30"></a>
 
 </div>
 
