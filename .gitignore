@@ -1,0 +1,8 @@
+# generated previews / scratch
+*.png
+!assets/*.png
+node_modules/
+__pycache__/
+.DS_Store
+tools/render/node_modules/
+tools/render/package-lock.json
