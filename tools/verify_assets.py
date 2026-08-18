@@ -120,7 +120,49 @@ def check(path):
             if left < -0.5 or left + w_t > cw + 0.5:
                 problems.append(f"text overflows canvas ({left:.0f}..{left+w_t:.0f} of {cw:.0f}): {t[:40]!r}")
 
-    # 5. permanently invisible elements
+    # 5. no two visible text runs collide at the same absolute point.
+    #    Positions are resolved through enclosing <g transform="translate(x,y)">
+    #    so that identical local coordinates in *different* rows do not raise a
+    #    false alarm. This catches one-at-a-time animation frames that would
+    #    stack on top of each other in a renderer that does not animate.
+    seen = {}
+    depth_tx = [(0.0, 0.0, False)]
+    token = re.compile(r'<g\b([^>]*)>|</g>|<text\b([^>]*)>(.*?)</text>', re.S)
+    for m in token.finditer(svg):
+        if m.group(0) == "</g>":
+            if len(depth_tx) > 1:
+                depth_tx.pop()
+            continue
+        if m.group(1) is not None:                       # opening <g>
+            g_attrs = m.group(1) or ""
+            tr = re.search(r'translate\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\)', g_attrs)
+            dx, dy, ghost = depth_tx[-1]
+            if tr:
+                dx += float(tr.group(1)); dy += float(tr.group(2))
+            # a group hidden with opacity="0" hides everything inside it
+            if re.search(r'opacity="0"', g_attrs):
+                ghost = True
+            depth_tx.append((dx, dy, ghost))
+            continue
+        a = dict(ATTR_RE.findall(m.group(2) or ""))
+        if a.get("opacity") == "0" or depth_tx[-1][2]:
+            continue
+        t = unescape(re.sub(r"<[^>]+>", "", m.group(3) or ""))
+        if not t.strip():
+            continue
+        dx, dy, _ = depth_tx[-1]
+        try:
+            spot = (round(float(a.get("x", 0)) + dx, 1),
+                    round(float(a.get("y", 0)) + dy, 1),
+                    a.get("text-anchor", "start"))
+        except ValueError:
+            continue
+        if spot in seen and seen[spot] != t:
+            problems.append(
+                f"two visible texts share position {spot}: {seen[spot][:24]!r} / {t[:24]!r}")
+        seen[spot] = t
+
+    # 6. permanently invisible elements
     for m in re.finditer(r'<(?:g|text|rect|circle)\b[^>]*opacity="0"[^>]*>', svg):
         tag = m.group(0)
         cls = re.search(r'class="([^"]*)"', tag)

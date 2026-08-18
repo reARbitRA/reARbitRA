@@ -1,7 +1,8 @@
 <!--
   KONKRED — profile README
   Brand System v2 · Void #0B0F14 · Clinical #D7D9DD · Signal Amber #D98A2E
-  Artwork is generated: `python3 tools/build_assets.py` (see tools/build_assets.py)
+  Artwork is generated: `python3 tools/build_assets.py`
+  Verified with:        `python3 tools/verify_assets.py`
   Do not hand-edit assets/*.svg — regenerate them.
 -->
 
@@ -34,6 +35,24 @@
 
 <img src="./assets/divider.svg" alt="" width="100%">
 
+## Services
+
+<img src="./assets/services.svg" alt="AI architecture, red team engagement, cost engineering, build sprint" width="100%">
+
+<img src="./assets/divider.svg" alt="" width="100%">
+
+## How an engagement runs
+
+<img src="./assets/process.svg" alt="Scope, model, build, break, hand over" width="100%">
+
+<img src="./assets/divider.svg" alt="" width="100%">
+
+## Domains
+
+<img src="./assets/domains.svg" alt="Legal, finance, engineering, healthcare, heavy industry, marketing, logistics, education, security, public sector" width="100%">
+
+<img src="./assets/divider.svg" alt="" width="100%">
+
 ## Stack
 
 <img src="./assets/stack.svg" alt="Capability groups: LLM engineering, AI security, build, AI economics, governance, advanced" width="100%">
@@ -46,60 +65,45 @@
 
 <img src="./assets/divider.svg" alt="" width="100%">
 
-## What I do
+## Writing
+
+<img src="./assets/writing.svg" alt="Selected manuscripts on AI governance, economics, security and quantum computing" width="100%">
+
+<img src="./assets/divider.svg" alt="" width="100%">
+
+## Working together
 
 <table>
 <tr>
-<td width="50%" valign="top">
+<td width="33%" valign="top">
 
-**Architecture**
-LLM system design, RAG pipelines, agent and bot
-orchestration, evaluation harnesses. Systems that
-survive contact with production traffic.
-
-</td>
-<td width="50%" valign="top">
-
-**Security**
-Red teaming, jailbreak surface mapping, prompt
-injection defence, guardrail validation. Find the
-break before someone else does.
+**Engagement**
+Contract, fractional or advisory.
+Remote, async-first, timezone
+flexible. Scoped work with a
+defined deliverable.
 
 </td>
-</tr>
-<tr>
-<td width="50%" valign="top">
+<td width="33%" valign="top">
 
-**Economics**
-Inference cost modelling, caching and routing
-strategy, throughput tuning. One deployment went
-from $20,000 to $6,000 without losing capability.
+**How I work**
+Evals before code. Ship a
+prototype early, harden it after.
+Red team it before it reaches
+production.
 
 </td>
-<td width="50%" valign="top">
+<td width="33%" valign="top">
 
-**Governance**
-ISO/IEC 42001 and EU AI Act alignment, AI asset
-valuation, certification trails. Documentation that
-matches reality, not the README from six months ago.
+**What you get**
+Working system, eval harness,
+security report, and documentation
+that matches reality — not the
+README from six months ago.
 
 </td>
 </tr>
 </table>
-
-<img src="./assets/divider.svg" alt="" width="100%">
-
-## Selected writing
-
-| Manuscript | Subject |
-| :--- | :--- |
-| **Tame the Machine** | Strategic roadmap for enterprise AI governance and deployment |
-| **Google AI Studio Goldmine** | Engineering the economics and profitability of the Gemini era |
-| **The Genesis Engine** | Generative AI architecture for heavy industry and engineering |
-| **Prompting the Beast** | Hallucination control and LLM output steering, systematically |
-| **Quantum Engineering Reality** | Practical implementation of quantum algorithms with Qiskit |
-| **From Prompt to Power** | Workflow patterns for conversational AI systems |
-| **Revolutionizing SEO** | Machine learning applied to digital marketing strategy |
 
 <img src="./assets/divider.svg" alt="" width="100%">
 

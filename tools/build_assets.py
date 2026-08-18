@@ -324,6 +324,99 @@ def txt(x, y, s, size=13, fill=CLINICAL, family=MONO, weight="400",
             f'font-weight="{weight}" fill="{fill}" text-anchor="{anchor}"{a}{extra}>{esc(s)}</text>')
 
 
+# --------------------------------------------------------------------------
+# Shared animation primitives
+#
+# GitHub strips <script> from README images, so every effect below is pure
+# declarative CSS/SMIL-free animation that runs on its own. Each helper keeps
+# the element's *base* state visible so a static rasteriser still shows the
+# finished composition (see motion()).
+# --------------------------------------------------------------------------
+
+# Per-character reveal. Each glyph is its own <text> so it can carry its own
+# delay, which is how the "typed" look is achieved without any script.
+def typed(x, y, s, size, fill, family=MONO, weight="400", ls=0.0,
+          start=0.0, step=0.035, cls="ty"):
+    _note(family, str(weight), s)
+    out = []
+    adv = size * MONO_ADV + ls
+    for i, ch in enumerate(s):
+        if ch == " ":
+            continue
+        out.append(
+            f'<text class="{cls}" x="{x + i * adv:.2f}" y="{y}" '
+            f'font-family="{family}" font-size="{size}" font-weight="{weight}" '
+            f'fill="{fill}" style="animation-delay:{start + i * step:.3f}s">{esc(ch)}</text>'
+        )
+    return "".join(out)
+
+
+TYPED_CSS = """
+  .ty { animation: tyin .28s ease-out backwards; }
+  @keyframes tyin { from { opacity:0 } to { opacity:1 } }
+"""
+
+
+def counter(x, y, final, size, fill, family=MONO, weight="600", ls=0.0,
+            anchor="start", start=0.0, frames=None, cls="cnt"):
+    """Odometer-style count-up.
+
+    Stacks the intermediate values on top of each other and shows exactly one
+    at a time, so the number appears to tick up to `final`. The last frame is
+    the real value and stays on screen.
+    """
+    if frames is None:
+        digits = "".join(c for c in final if c.isdigit())
+        if digits and len(digits) <= 4:
+            end = int(digits)
+            pre = final[:final.index(digits[0])]
+            post = final[final.index(digits[0]) + len(digits):]
+            steps = 7
+            frames = [f"{pre}{int(end * (i + 1) / steps)}{post}" for i in range(steps)]
+        else:
+            frames = [final]
+    frames = frames[:-1] + [final]
+    n = len(frames)
+    per = 0.09
+    total = n * per
+    out = []
+    for i, f in enumerate(frames):
+        last = i == n - 1
+        _note(family, str(weight), f)
+        # opacity="0" on the intermediate frames is a presentation attribute, so a
+        # renderer that ignores CSS shows only the final value rather than all of
+        # them stacked on top of each other.
+        vis = "" if last else ' opacity="0"'
+        klass = f"{cls} final" if last else f"{cls} step"
+        style = f"animation-delay:{start + i * per:.2f}s"
+        out.append(
+            f'<text class="{klass}" x="{x}" y="{y}"{vis} '
+            f'font-family="{family}" font-size="{size}" font-weight="{weight}" '
+            f'fill="{fill}" text-anchor="{anchor}" letter-spacing="{ls}" '
+            f'style="{style}">{esc(f)}</text>'
+        )
+    return "".join(out)
+
+
+COUNTER_CSS = """
+  .cnt.step { animation: cntflash .09s linear both; }
+  @keyframes cntflash { 0% { opacity:1 } 99% { opacity:1 } 100% { opacity:0 } }
+  .cnt.final { animation: cntlast .22s ease-out backwards; }
+  @keyframes cntlast { from { opacity:0; transform: translateY(3px) } to { opacity:1; transform: none } }
+"""
+
+
+def sweep_defs(idp, color=SIGNAL, op=".55"):
+    """Gradient used by the travelling scan bars."""
+    return (
+        f'<linearGradient id="{idp}sw" x1="0" y1="0" x2="1" y2="0">'
+        f'<stop offset="0%" stop-color="{color}" stop-opacity="0"/>'
+        f'<stop offset="50%" stop-color="{color}" stop-opacity="{op}"/>'
+        f'<stop offset="100%" stop-color="{color}" stop-opacity="0"/>'
+        f'</linearGradient>'
+    )
+
+
 # ==========================================================================
 # 1. HEADER
 # ==========================================================================
@@ -357,11 +450,29 @@ def build_header():
   .live {{ animation: sig 2.4s ease-in-out infinite; }}
   .caret {{ animation: blink 1.1s steps(1) infinite; }}
   @keyframes blink {{ 0%,49% {{ opacity:1 }} 50%,100% {{ opacity:0 }} }}
-"""
+  .hsweep {{ animation: hsw 7s linear infinite; }}
+  @keyframes hsw {{ from {{ transform: translateX(-380px) }}
+                    to   {{ transform: translateX({w}px) }} }}
+  .gridpulse {{ animation: gp 6s ease-in-out infinite; }}
+  @keyframes gp {{ 0%,100% {{ opacity:.018 }} 50% {{ opacity:.05 }} }}
+  .spark {{ animation: sparkmove 9s linear infinite; }}
+  @keyframes sparkmove {{
+      0%   {{ opacity:0; transform: translateX(0) }}
+      6%   {{ opacity:.85 }}
+     94%   {{ opacity:.85 }}
+    100%   {{ opacity:0; transform: translateX(760px) }} }}
+  .sp1 {{ animation-delay:0s }} .sp2 {{ animation-delay:3s }} .sp3 {{ animation-delay:6s }}
+  .tick2 {{ animation: tk2 3s ease-in-out infinite; }}
+  @keyframes tk2 {{ 0%,100% {{ opacity:.25 }} 50% {{ opacity:.9 }} }}
+  .barfill {{ transform-origin:left center; animation: bf 1.4s ease-out .7s backwards; }}
+  @keyframes bf {{ from {{ transform:scaleX(0) }} to {{ transform:scaleX(1) }} }}
+""" + TYPED_CSS
     o = [head(w, h, "Ari Miyanji - AI research and development",
               "Animated KONKRED-branded profile header with the Cube-K mark.", css)]
     o.append(f'<rect width="{w}" height="{h}" fill="{VOID}"/>')
-    o.append(grid("h", w, h))
+    o.append(f'<g class="gridpulse">{grid("h", w, h)}</g>')
+    o.append(f'<defs>{sweep_defs("h")}</defs>')
+    o.append(f'<rect class="hsweep" x="0" y="0" width="380" height="{h}" fill="url(#hsw)" opacity=".22"/>')
     o.append(f'<rect x="0" y="0" width="{w}" height="{h}" fill="none" stroke="{LINE}" stroke-width="1"/>')
     o.append(crops(w, h))
 
@@ -372,9 +483,8 @@ def build_header():
     o.append(txt(x, 92, "AI RESEARCH  ·  DEVELOPMENT  ·  SECURITY", 11, MID, MONO, "400", "3.6"))
     o.append('</g>')
 
-    o.append(f'<g class="rise r1">')
-    o.append(txt(x, 152, "ARI MIYANJI", 50, CONC_LT, MONO, "600", "11"))
-    o.append('</g>')
+    o.append(typed(x, 152, "ARI MIYANJI", 50, CONC_LT, MONO, "600", 11,
+                   start=0.25, step=0.055))
 
     o.append(f'<g class="rise r2">')
     o.append(f'<line x1="{x}" y1="174" x2="742" y2="174" stroke="{LINE2}" stroke-width="1"/>')
@@ -479,14 +589,27 @@ def build_products():
   .edge {{ stroke-dasharray: 90 700; animation: edgerun 7s linear infinite; }}
   @keyframes edgerun {{ to {{ stroke-dashoffset: -790; }} }}
   .p1 .edge {{ animation-delay:1.75s }} .p2 .edge {{ animation-delay:3.5s }} .p3 .edge {{ animation-delay:5.25s }}
-"""
+  .ic path {{ stroke-dasharray: 120; animation: draw 2.4s ease-out backwards; }}
+  @keyframes draw {{ from {{ stroke-dashoffset: 120 }} to {{ stroke-dashoffset: 0 }} }}
+  .pscan {{ animation: pscan 9s linear infinite; }}
+  @keyframes pscan {{ from {{ transform: translateX(-200px) }}
+                      to   {{ transform: translateX({cw}px) }} }}
+  .uline {{ transform-origin:left center; animation: ul .7s ease-out backwards; }}
+  @keyframes ul {{ from {{ transform: scaleX(0) }} to {{ transform: scaleX(1) }} }}
+""" + TYPED_CSS
     o = [head(w, h, "KONKRED product suite",
               "Four product cards: Audit, Enterprise, Redeye, Arbitra.", css)]
+    pclips = "".join(
+        f'<clipPath id="pclip{i}"><rect x="0" y="0" width="{cw}" height="{ch}" rx="3"/></clipPath>'
+        for i in range(len(cards)))
+    o.append(f'<defs>{sweep_defs("p")}{pclips}</defs>')
     o.append(f'<rect width="{w}" height="{h}" fill="{VOID}"/>')
 
     for i, (ic, tag, title, body, meta) in enumerate(cards):
         cx = (i % 2) * (cw + gap)
         cy = (i // 2) * (ch + gap)
+        # mirrors the .c0-.c3 stagger in CSS so inline delays line up with it
+        d = 0.05 + i * 0.14
         o.append(f'<g class="card c{i} p{i}" transform="translate({cx},{cy})">')
         o.append(f'<rect x="0" y="0" width="{cw}" height="{ch}" fill="{CARD}" stroke="{LINE}" stroke-width="1" rx="3"/>')
         # running edge highlight
@@ -495,10 +618,18 @@ def build_products():
         # signal corner
         o.append(f'<path class="corner" d="M {cw-22} 1 L {cw-1} 1 L {cw-1} 22" fill="none" '
                  f'stroke="{SIGNAL}" stroke-width="2"/>')
-        o.append(icon(ic, 24, 22, 1.15, CLINICAL))
+        o.append(f'<g class="ic" style="animation-delay:{d+0.2:.2f}s">'
+                 f'{icon(ic, 24, 22, 1.15, CLINICAL)}</g>')
         o.append(txt(66, 36, tag, 10, MID, MONO, "400", "2.4"))
-        o.append(txt(66, 58, title, 24, CONC_LT, MONO, "600", "-0.2"))
+        o.append(typed(66, 58, title, 24, CONC_LT, MONO, "600", -0.2,
+                       start=d + 0.25, step=0.028))
         o.append(f'<line x1="24" y1="86" x2="{cw-24}" y2="86" stroke="{LINE}" stroke-width="1"/>')
+        o.append(f'<line class="uline" x1="24" y1="86" x2="{cw-24}" y2="86" '
+                 f'stroke="{SIGNAL}" stroke-width="1" opacity=".55" '
+                 f'style="animation-delay:{d+0.4:.2f}s"/>')
+        o.append(f'<g clip-path="url(#pclip{i})"><rect class="pscan" x="0" y="0" '
+                 f'width="200" height="{ch}" fill="url(#psw)" opacity=".14" '
+                 f'style="animation-delay:{i*2.2:.1f}s"/></g>')
         for j, ln in enumerate(body):
             o.append(txt(24, 114 + j * 24, ln, 14, MUTED, INTER, "400"))
         o.append(f'<rect x="24" y="{ch-44}" width="{cw-48}" height="1" fill="{LINE}"/>')
@@ -562,6 +693,10 @@ def build_stack():
   .glab { animation: pin .45s ease-out backwards; }
   .tick { animation: tk 4.4s ease-in-out infinite; }
   @keyframes tk { 0%,100% { opacity:.25 } 50% { opacity:1 } }
+  .tokbox { animation: tokglow 6s ease-in-out infinite; }
+  @keyframes tokglow { 0%,100% { stroke: #222B36 } 50% { stroke: #2D3642 } }
+  .gline { transform-origin:left center; animation: gl .6s ease-out backwards; }
+  @keyframes gl { from { transform: scaleX(0) } to { transform: scaleX(1) } }
 """
     o = [head(w, h, "Technical stack",
               "Six capability groups rendered as animated tokens.", css)]
@@ -577,14 +712,17 @@ def build_stack():
                  f'style="animation-delay:{gi*0.5:.1f}s"/>')
         o.append(txt(13, 15, name, 11, CLINICAL, MONO, "600", "2.6"))
         o.append(f'<line x1="0" y1="26" x2="{colw}" y2="26" stroke="{LINE}" stroke-width="1"/>')
+        o.append(f'<line class="gline" x1="0" y1="26" x2="{colw}" y2="26" stroke="{SIGNAL}" '
+                 f'stroke-width="1" opacity=".5" style="animation-delay:{gi*0.09+0.25:.2f}s"/>')
         o.append('</g>')
         for ri, row in enumerate(rows):
             px = 0
             for label, iw in row:
                 d = 0.20 + n * 0.028
                 o.append(f'<g class="pill" style="animation-delay:{d:.2f}s">')
-                o.append(f'<rect x="{px}" y="{lab_h + ri*(ph+pgap)}" width="{iw}" height="{ph}" '
-                         f'fill="{ROW}" stroke="{LINE2}" stroke-width="1" rx="2"/>')
+                o.append(f'<rect class="tokbox" x="{px}" y="{lab_h + ri*(ph+pgap)}" '
+                         f'width="{iw}" height="{ph}" fill="{ROW}" stroke="{LINE2}" '
+                         f'stroke-width="1" rx="2" style="animation-delay:{(n%14)*0.42:.2f}s"/>')
                 o.append(txt(px + pad, lab_h + ri * (ph + pgap) + 17, label, 11, MUTED, MONO, "400", "0.3"))
                 o.append('</g>')
                 px += iw + pgap
@@ -619,7 +757,11 @@ def build_metrics():
   @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   .sw { animation: sweep 5.5s linear infinite; }
   @keyframes sweep { 0% { opacity:0 } 8% { opacity:.9 } 40% { opacity:0 } 100% { opacity:0 } }
-"""
+  .mgrid { animation: mg 5s ease-in-out infinite; }
+  @keyframes mg { 0%,100% { opacity:.05 } 50% { opacity:.16 } }
+  .mtick { animation: mt 3.4s ease-in-out infinite; }
+  @keyframes mt { 0%,100% { opacity:.2 } 50% { opacity:.75 } }
+""" + COUNTER_CSS
     o = [head(w, h, "Signals", "Five headline metrics with animated reveal.", css)]
     o.append(f'<rect width="{w}" height="{h}" fill="{VOID}"/>')
 
@@ -630,8 +772,11 @@ def build_metrics():
         o.append(f'<rect x="0" y="0" width="{cw}" height="{h}" fill="{CARD}" stroke="{LINE}" stroke-width="1" rx="3"/>')
         o.append(f'<rect class="sw" x="0" y="0" width="{cw}" height="2" fill="{SIGNAL}" '
                  f'style="animation-delay:{i*0.55:.2f}s"/>')
+        o.append(f'<line class="mtick" x1="{cw-20}" y1="20" x2="{cw-20}" y2="34" '
+                 f'stroke="{SIGNAL}" stroke-width="1.4" style="animation-delay:{i*0.45:.2f}s"/>')
         o.append(txt(20, 30, f"0{i+1}", 10, MID, MONO, "400", "2.0"))
-        o.append(txt(20, 78, val, 40, CONC_LT, MONO, "600", "-0.5"))
+        o.append(counter(20, 78, val, 40, CONC_LT, MONO, "600", "-0.5",
+                         start=d + 0.15))
         o.append(f'<rect class="bar" x="20" y="92" width="{cw-40}" height="2" fill="{SIGNAL}" '
                  f'style="animation-delay:{d+0.25:.2f}s" opacity=".8"/>')
         o.append(txt(20, 116, lab, fit_size(lab, 10.5, cw - 40, 1.6), CLINICAL, MONO, "500", "1.6"))
@@ -665,7 +810,11 @@ def build_timeline():
   @keyframes np { 0%,100% { opacity:.3 } 50% { opacity:1 } }
   .rail { stroke-dasharray: 60 480; animation: rr 8s linear infinite; }
   @keyframes rr { to { stroke-dashoffset: -540; } }
-"""
+  .eprog { transform-origin:left center; animation: ep 1.1s ease-out backwards; }
+  @keyframes ep { from { transform: scaleX(0) } to { transform: scaleX(1) } }
+  .ering { animation: er 4s ease-in-out infinite; }
+  @keyframes er { 0%,100% { opacity:.2 } 50% { opacity:.7 } }
+""" + TYPED_CSS
     o = [head(w, h, "Build log", "Timeline of shipped systems.", css)]
     o.append(f'<rect width="{w}" height="{h}" fill="{VOID}"/>')
     o.append(f'<line x1="26" y1="0" x2="26" y2="{h}" stroke="{LINE}" stroke-width="1"/>')
@@ -679,7 +828,13 @@ def build_timeline():
         o.append(f'<rect class="node" x="23" y="{rh/2-3}" width="6" height="6" fill="{SIGNAL}" '
                  f'style="animation-delay:{i*0.45:.2f}s"/>')
         o.append(f'<rect x="56.5" y="0.5" width="{w-57}" height="{rh-1}" fill="{ROW}" stroke="{LINE}" stroke-width="1" rx="3"/>')
-        o.append(txt(78, 34, title, 16.5, CONC_LT, MONO, "500", "-0.1"))
+        o.append(typed(78, 34, title, 16.5, CONC_LT, MONO, "500", -0.1,
+                       start=d + 0.15, step=0.025))
+        o.append(f'<rect class="eprog" x="78" y="{rh-16}" width="{w-160}" height="1.5" '
+                 f'fill="{SIGNAL}" opacity=".4" style="animation-delay:{d+0.3:.2f}s"/>')
+        o.append(f'<circle class="ering" cx="{w-44}" cy="{rh-26}" r="5" fill="none" '
+                 f'stroke="{SIGNAL if state == "LIVE" else LINE2}" stroke-width="1.2" '
+                 f'style="animation-delay:{i*0.4:.2f}s"/>')
         o.append(txt(78, 62, body, 13.5, MUTED, INTER, "400"))
         col = SIGNAL if state == "LIVE" else MID
         o.append(txt(w - 26, 34, state, 10, col, MONO, "500", "2.2", "end"))
@@ -699,6 +854,12 @@ def build_divider():
   @keyframes run { to { stroke-dashoffset: -1200; } }
   .dot { animation: dp 2.4s ease-in-out infinite; }
   @keyframes dp { 0%,100% { opacity:.3 } 50% { opacity:1 } }
+  .dtick { animation: dt 3.2s ease-in-out infinite; }
+  @keyframes dt { 0%,100% { opacity:.25 } 50% { opacity:.9 } }
+  .dpulse { animation: dpul 5s linear infinite; }
+  @keyframes dpul { 0% { opacity:0; transform: translateX(0) }
+                    10% { opacity:1 } 90% { opacity:1 }
+                    100% { opacity:0; transform: translateX(1160px) } }
 """
     o = [head(w, h, "Divider", "Animated signal divider.", css)]
     o.append(f'<rect width="{w}" height="{h}" fill="{VOID}"/>')
@@ -706,8 +867,10 @@ def build_divider():
     o.append(f'<line class="seg" x1="0" y1="13" x2="{w}" y2="13" stroke="{SIGNAL}" stroke-width="1.6"/>')
     for i in range(13):
         x = 24 + i * 96
-        o.append(f'<rect x="{x}" y="10" width="2" height="6" fill="{MID}" opacity=".5"/>')
+        o.append(f'<rect class="dtick" x="{x}" y="10" width="2" height="6" fill="{MID}" '
+                 f'opacity=".5" style="animation-delay:{i*0.16:.2f}s"/>')
     o.append(f'<circle class="dot" cx="{w/2}" cy="13" r="3" fill="{SIGNAL}"/>')
+    o.append(f'<rect class="dpulse" x="0" y="11.5" width="46" height="3" fill="{SIGNAL}" opacity=".7"/>')
     o.append('</svg>')
     return "".join(o)
 
@@ -830,6 +993,250 @@ def build_badge(label, accent=False):
     return "".join(o)
 
 
+# ==========================================================================
+# 10. SERVICES — what can actually be bought
+# ==========================================================================
+def build_services():
+    rows = [
+        ("AI ARCHITECTURE", "LLM system design, RAG pipelines, agent orchestration",
+         ["Discovery & scoping", "Reference architecture", "Eval harness", "Handover docs"]),
+        ("RED TEAM ENGAGEMENT", "Adversarial testing against your deployed models",
+         ["Jailbreak surface map", "Injection defence", "Guardrail validation", "Full report"]),
+        ("COST ENGINEERING", "Inference economics for production workloads",
+         ["COGS teardown", "Caching strategy", "Model routing", "Measured savings"]),
+        ("BUILD SPRINT", "Agents, bots, internal tools, automation pipelines",
+         ["Prototype in days", "Production hardening", "Monitoring", "Runbook"]),
+    ]
+    w = 1200
+    rh, gap = 132, 14
+    h = len(rows) * (rh + gap) - gap
+
+    css = f"""
+  .srow {{ animation: srin .55s ease-out backwards; }}
+  @keyframes srin {{ from {{ opacity:0; transform: translateX(-10px) }}
+                     to   {{ opacity:1; transform: none }} }}
+  .sbar {{ transform-origin: top center; animation: sbar .6s ease-out backwards; }}
+  @keyframes sbar {{ from {{ transform: scaleY(0) }} to {{ transform: scaleY(1) }} }}
+  .chip {{ animation: chin .4s ease-out backwards; }}
+  @keyframes chin {{ from {{ opacity:0; transform: translateY(5px) }}
+                     to   {{ opacity:1; transform: none }} }}
+  .sscan {{ animation: sscan 8s linear infinite; }}
+  @keyframes sscan {{ from {{ transform: translateX(-260px) }}
+                      to   {{ transform: translateX({w}px) }} }}
+  .num {{ animation: numpulse 4s ease-in-out infinite; }}
+  @keyframes numpulse {{ 0%,100% {{ opacity:.3 }} 50% {{ opacity:.85 }} }}
+{TYPED_CSS}"""
+
+    o = [head(w, h, "Services", "What can be engaged: architecture, red team, cost, build.", css)]
+    clips = "".join(
+        f'<clipPath id="svclip{i}"><rect x="0" y="0" width="{w}" height="{rh}" rx="3"/></clipPath>'
+        for i in range(len(rows)))
+    o.append(f'<defs>{sweep_defs("sv")}{clips}</defs>')
+    o.append(f'<rect width="{w}" height="{h}" fill="{VOID}"/>')
+
+    for i, (title, sub, chips) in enumerate(rows):
+        y = i * (rh + gap)
+        d = 0.06 + i * 0.13
+        o.append(f'<g class="srow" style="animation-delay:{d:.2f}s" transform="translate(0,{y})">')
+        o.append(f'<rect x=".5" y=".5" width="{w-1}" height="{rh-1}" fill="{CARD}" '
+                 f'stroke="{LINE}" stroke-width="1" rx="3"/>')
+        o.append(f'<rect class="sbar" x="0" y="0" width="3" height="{rh}" fill="{SIGNAL}" '
+                 f'style="animation-delay:{d+0.15:.2f}s"/>')
+        o.append(f'<g clip-path="url(#svclip{i})"><rect class="sscan" x="0" y="0" '
+                 f'width="260" height="{rh}" fill="url(#svsw)" opacity=".16" '
+                 f'style="animation-delay:{i*2:.1f}s"/></g>')
+        o.append(txt(w - 24, 36, f"0{i+1}", 30, MID, MONO, "600", "0", "end", cls="num",
+                     extra=f' style="animation-delay:{i*0.7:.1f}s"'))
+        o.append(typed(26, 38, title, 17, CONC_LT, MONO, "600", 2.2,
+                       start=d + 0.2, step=0.022))
+        o.append(txt(26, 62, sub, 13.5, MUTED, INTER, "400"))
+        cx = 26
+        for j, c in enumerate(chips):
+            cwid = int(round(mono_w(c, 11) + 22))
+            o.append(f'<g class="chip" style="animation-delay:{d+0.45+j*0.07:.2f}s">')
+            o.append(f'<rect x="{cx}" y="{rh-46}" width="{cwid}" height="26" fill="{ROW}" '
+                     f'stroke="{LINE2}" stroke-width="1" rx="2"/>')
+            o.append(txt(cx + 11, rh - 28, c, 11, MUTED, MONO, "400", "0.3"))
+            o.append('</g>')
+            cx += cwid + 8
+        o.append('</g>')
+
+    o.append('</svg>')
+    return "".join(o)
+
+
+# ==========================================================================
+# 11. DOMAINS — where the prompt library has shipped
+# ==========================================================================
+def build_domains():
+    doms = [
+        ("LEGAL", "contracts, compliance, discovery"),
+        ("FINANCE", "modelling, risk, reporting"),
+        ("ENGINEERING", "specs, review, diagnostics"),
+        ("HEALTHCARE", "triage, documentation, coding"),
+        ("HEAVY INDUSTRY", "maintenance, safety, ops"),
+        ("MARKETING", "research, copy, analytics"),
+        ("LOGISTICS", "routing, forecasting, tracking"),
+        ("EDUCATION", "curriculum, assessment, tutoring"),
+        ("SECURITY", "threat intel, audit, response"),
+        ("PUBLIC SECTOR", "policy, records, service"),
+    ]
+    w = 1200
+    cols, cwid, chh, gap = 5, 232, 96, 10
+    rows = (len(doms) + cols - 1) // cols
+    h = rows * (chh + gap) - gap
+
+    css = """
+  .dom { animation: domin .5s ease-out backwards; }
+  @keyframes domin { from { opacity:0; transform: scale(.965) }
+                     to   { opacity:1; transform: none } }
+  .dring { transform-origin: center; animation: dring 5s ease-in-out infinite; }
+  @keyframes dring { 0%,100% { opacity:.18 } 50% { opacity:.7 } }
+  .dcorner { animation: dcor 4.5s ease-in-out infinite; }
+  @keyframes dcor { 0%,100% { opacity:.15 } 50% { opacity:.8 } }
+"""
+    o = [head(w, h, "Domains", "Strategic domains covered by the prompt library.", css)]
+    o.append(f'<rect width="{w}" height="{h}" fill="{VOID}"/>')
+
+    for i, (name, sub) in enumerate(doms):
+        cx = (i % cols) * (cwid + gap)
+        cy = (i // cols) * (chh + gap)
+        d = 0.04 + i * 0.055
+        o.append(f'<g class="dom" style="animation-delay:{d:.2f}s" transform="translate({cx},{cy})">')
+        o.append(f'<rect x=".5" y=".5" width="{cwid-1}" height="{chh-1}" fill="{CARD}" '
+                 f'stroke="{LINE}" stroke-width="1" rx="3"/>')
+        o.append(f'<path class="dcorner" d="M {cwid-18} 1 L {cwid-1} 1 L {cwid-1} 18" '
+                 f'fill="none" stroke="{SIGNAL}" stroke-width="1.6" '
+                 f'style="animation-delay:{i*0.35:.2f}s"/>')
+        o.append(f'<circle class="dring" cx="24" cy="30" r="7" fill="none" '
+                 f'stroke="{SIGNAL}" stroke-width="1.4" style="animation-delay:{i*0.3:.2f}s"/>')
+        o.append(f'<circle cx="24" cy="30" r="2.4" fill="{SIGNAL}" opacity=".8"/>')
+        size = fit_size(name, 13, cwid - 56, 1.8)
+        o.append(txt(42, 35, name, size, CONC_LT, MONO, "600", "1.8"))
+        o.append(f'<line x1="16" y1="52" x2="{cwid-16}" y2="52" stroke="{LINE}" stroke-width="1"/>')
+        o.append(txt(16, 72, sub, fit_size(sub, 11, cwid - 32, 0.2), MUTED, MONO, "400", "0.2"))
+        o.append('</g>')
+
+    o.append('</svg>')
+    return "".join(o)
+
+
+# ==========================================================================
+# 12. PROCESS — how an engagement runs
+# ==========================================================================
+def build_process():
+    steps = [
+        ("SCOPE", "Understand the system and the failure modes that matter"),
+        ("MODEL", "Design the architecture, write the evals before the code"),
+        ("BUILD", "Ship a working prototype, then harden it for production"),
+        ("BREAK", "Red team it, measure cost, fix what falls over"),
+        ("HAND OVER", "Documentation that matches reality, and a runbook"),
+    ]
+    w = 1200
+    h = 186
+    n = len(steps)
+    bw = (w - (n - 1) * 16) // n
+
+    css = f"""
+  .pstep {{ animation: psin .5s ease-out backwards; }}
+  @keyframes psin {{ from {{ opacity:0; transform: translateY(10px) }}
+                     to   {{ opacity:1; transform: none }} }}
+  .pflow {{ stroke-dasharray: 7 7; animation: pflow 1.4s linear infinite; }}
+  @keyframes pflow {{ to {{ stroke-dashoffset: -28 }} }}
+  .pdot {{ animation: pdot 3.2s ease-in-out infinite; }}
+  @keyframes pdot {{ 0%,100% {{ opacity:.3; r:4 }} 50% {{ opacity:1; r:5.4 }} }}
+  .pnum {{ animation: pn 5s ease-in-out infinite; }}
+  @keyframes pn {{ 0%,100% {{ opacity:.25 }} 50% {{ opacity:.8 }} }}
+{TYPED_CSS}"""
+
+    o = [head(w, h, "Process", "How an engagement runs, end to end.", css)]
+    o.append(f'<rect width="{w}" height="{h}" fill="{VOID}"/>')
+
+    ry = 54
+    o.append(f'<line x1="12" y1="{ry}" x2="{w-12}" y2="{ry}" stroke="{LINE}" stroke-width="1"/>')
+    o.append(f'<line class="pflow" x1="12" y1="{ry}" x2="{w-12}" y2="{ry}" '
+             f'stroke="{SIGNAL}" stroke-width="1.5" opacity=".75"/>')
+
+    for i, (name, body) in enumerate(steps):
+        x = i * (bw + 16)
+        d = 0.06 + i * 0.12
+        cxx = x + bw / 2
+        o.append(f'<g class="pstep" style="animation-delay:{d:.2f}s">')
+        o.append(f'<circle class="pdot" cx="{cxx}" cy="{ry}" r="4" fill="{SIGNAL}" '
+                 f'style="animation-delay:{i*0.4:.2f}s"/>')
+        o.append(f'<circle cx="{cxx}" cy="{ry}" r="9" fill="none" stroke="{LINE2}" stroke-width="1"/>')
+        o.append(txt(cxx, 30, f"0{i+1}", 11, MID, MONO, "500", "2", "middle", cls="pnum",
+                     extra=f' style="animation-delay:{i*0.5:.1f}s"'))
+        o.append(f'<rect x="{x}" y="{ry+26}" width="{bw}" height="{h-ry-38}" fill="{CARD}" '
+                 f'stroke="{LINE}" stroke-width="1" rx="3"/>')
+        o.append(typed(x + 14, ry + 52, name, 14, CONC_LT, MONO, "600", 1.6,
+                       start=d + 0.2, step=0.03))
+        # wrap body onto two lines
+        words, line, lines = body.split(), "", []
+        for wd in words:
+            t = (line + " " + wd).strip()
+            if mono_w(t, 10.5) > bw - 28 and line:
+                lines.append(line); line = wd
+            else:
+                line = t
+        lines.append(line)
+        for j, ln in enumerate(lines[:3]):
+            o.append(txt(x + 14, ry + 74 + j * 16, ln, 10.5, MUTED, MONO, "400", "0.1"))
+        o.append('</g>')
+
+    o.append('</svg>')
+    return "".join(o)
+
+
+# ==========================================================================
+# 13. WRITING — manuscripts
+# ==========================================================================
+def build_writing():
+    books = [
+        ("Tame the Machine", "Enterprise AI governance and deployment", "1,000pp"),
+        ("Google AI Studio Goldmine", "Economics and profitability of the Gemini era", "19 ch"),
+        ("The Genesis Engine", "Generative architecture for heavy industry", "Arbitra"),
+        ("Prompting the Beast", "Hallucination control and output steering", "Manual"),
+        ("Quantum Engineering Reality", "Quantum algorithms in practice with Qiskit", "Qiskit"),
+        ("From Prompt to Power", "Workflow patterns for conversational systems", "Patterns"),
+        ("Revolutionizing SEO", "Machine learning for digital strategy", "Applied"),
+    ]
+    w = 1200
+    rh, gap = 54, 8
+    h = len(books) * (rh + gap) - gap
+
+    css = """
+  .brow { animation: brin .45s ease-out backwards; }
+  @keyframes brin { from { opacity:0; transform: translateX(-8px) }
+                    to   { opacity:1; transform: none } }
+  .spine { transform-origin: center; animation: spine 4.5s ease-in-out infinite; }
+  @keyframes spine { 0%,100% { opacity:.3 } 50% { opacity:.95 } }
+  .bline { stroke-dasharray: 40 300; animation: bl 6s linear infinite; }
+  @keyframes bl { to { stroke-dashoffset: -340 } }
+"""
+    o = [head(w, h, "Writing", "Selected manuscripts.", css)]
+    o.append(f'<rect width="{w}" height="{h}" fill="{VOID}"/>')
+
+    for i, (title, sub, tag) in enumerate(books):
+        y = i * (rh + gap)
+        d = 0.05 + i * 0.08
+        o.append(f'<g class="brow" style="animation-delay:{d:.2f}s" transform="translate(0,{y})">')
+        o.append(f'<rect x=".5" y=".5" width="{w-1}" height="{rh-1}" fill="{ROW}" '
+                 f'stroke="{LINE}" stroke-width="1" rx="3"/>')
+        o.append(f'<rect class="spine" x="0" y="8" width="3" height="{rh-16}" fill="{SIGNAL}" '
+                 f'style="animation-delay:{i*0.4:.2f}s"/>')
+        o.append(f'<line class="bline" x1="0" y1="{rh-0.5}" x2="{w}" y2="{rh-0.5}" '
+                 f'stroke="{SIGNAL}" stroke-width="1" opacity=".5" '
+                 f'style="animation-delay:{i*0.6:.2f}s"/>')
+        o.append(txt(24, 33, title, 15, CONC_LT, MONO, "500", "0.1"))
+        o.append(txt(430, 33, sub, 13, MUTED, INTER, "400"))
+        o.append(txt(w - 24, 33, tag, 10.5, SIGNAL, MONO, "500", "1.8", "end"))
+        o.append('</g>')
+
+    o.append('</svg>')
+    return "".join(o)
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     if not fontpack.available():
@@ -846,6 +1253,10 @@ def main():
         "divider.svg":  render(build_divider),
         "footer.svg":   render(build_footer),
         "cube-k.svg":   render(build_mark),
+        "services.svg": render(build_services),
+        "domains.svg":  render(build_domains),
+        "process.svg":  render(build_process),
+        "writing.svg":  render(build_writing),
         "badge-site.svg":    render(lambda: build_badge("konkred.xyz", True)),
         "badge-email.svg":   render(lambda: build_badge("ari@konkred.xyz")),
         "badge-remote.svg":  render(lambda: build_badge("OPEN TO REMOTE")),

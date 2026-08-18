@@ -221,6 +221,69 @@ a.val:hover{color:var(--signal)}
   border:1px solid var(--clinical);margin-top:6px;transition:background .16s ease-out,color .16s ease-out}
 .btn:hover{background:transparent;color:var(--clinical)}
 
+
+/* ---------- services ---------- */
+.srv{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--signal);
+  border-radius:3px;padding:18px 20px;margin-bottom:12px;position:relative;overflow:hidden;
+  transition:border-color .17s ease-out,transform .17s ease-out}
+.srv:hover{border-color:var(--line3);border-left-color:var(--signal);transform:translateX(3px)}
+.srv .h{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.srv h3{font-family:var(--mono);font-size:16px;font-weight:600;letter-spacing:2px;
+  color:var(--conc-lt);text-transform:uppercase}
+.srv .n{margin-left:auto;font-family:var(--mono);font-size:26px;font-weight:600;color:var(--line3);
+  line-height:1;transition:color .17s ease-out}
+.srv:hover .n{color:var(--signal)}
+.srv p{font-size:14px;color:var(--muted);margin:5px 0 13px}
+.srv .chips{display:flex;flex-wrap:wrap;gap:7px}
+.srv .chip{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--row);
+  border:1px solid var(--line2);padding:5px 11px;border-radius:2px;
+  transition:color .16s ease-out,border-color .16s ease-out}
+.srv:hover .chip{border-color:var(--line3);color:var(--clinical)}
+
+/* ---------- process ---------- */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;
+  position:relative}
+.step{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:16px 16px 18px;
+  position:relative;transition:border-color .17s ease-out,transform .17s ease-out}
+.step:hover{border-color:var(--line3);transform:translateY(-2px)}
+.step .dot{width:9px;height:9px;border-radius:50%;background:var(--signal);margin-bottom:12px;
+  animation:sig 3.2s ease-in-out infinite}
+.step .n{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--mid);
+  position:absolute;top:16px;right:16px}
+.step h3{font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:1.6px;
+  color:var(--conc-lt);text-transform:uppercase;margin-bottom:6px}
+.step p{font-size:12.5px;color:var(--muted);line-height:1.6}
+
+/* ---------- domains ---------- */
+.domgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:12px}
+.dom{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:15px 16px;
+  position:relative;overflow:hidden;transition:border-color .17s ease-out,transform .17s ease-out}
+.dom:hover{border-color:var(--line3);transform:translateY(-1px)}
+.dom::after{content:'';position:absolute;top:0;right:0;width:16px;height:16px;
+  border-top:1.6px solid var(--signal);border-right:1.6px solid var(--signal);
+  opacity:.2;transition:opacity .17s ease-out}
+.dom:hover::after{opacity:1}
+.dom .t{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.dom .ring{width:13px;height:13px;border:1.4px solid var(--signal);border-radius:50%;
+  position:relative;flex:none;animation:dring 5s ease-in-out infinite}
+.dom .ring::after{content:'';position:absolute;inset:3.4px;background:var(--signal);border-radius:50%}
+@keyframes dring{0%,100%{opacity:.45}50%{opacity:1}}
+.dom h3{font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:1.4px;
+  color:var(--conc-lt);text-transform:uppercase}
+.dom p{font-family:var(--mono);font-size:11px;color:var(--muted);
+  padding-top:9px;border-top:1px solid var(--line)}
+
+/* ---------- writing ---------- */
+.book{display:flex;align-items:center;gap:18px;background:var(--row);border:1px solid var(--line);
+  border-left:3px solid var(--signal);border-radius:3px;padding:13px 18px;margin-bottom:8px;
+  flex-wrap:wrap;transition:border-color .17s ease-out,transform .17s ease-out}
+.book:hover{border-color:var(--line3);border-left-color:var(--signal);transform:translateX(3px)}
+.book b{font-family:var(--mono);font-size:14.5px;font-weight:500;color:var(--conc-lt);
+  flex:0 0 260px}
+.book span{font-size:13.5px;color:var(--muted);flex:1;min-width:200px}
+.book i{font-family:var(--mono);font-size:10.5px;letter-spacing:1.6px;color:var(--signal);
+  font-style:normal;flex:none}
+
 /* ---------- footer ---------- */
 footer{border-top:1px solid var(--line);padding:26px 0 40px;
   display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;
@@ -247,8 +310,9 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;
         <path d="M 116,127 L 130,119 L 130,146 L 152,110 L 170,100 L 143,143 L 171,168 L 153,178 L 130,155 L 130,183 L 116,191 Z" fill="#0B0F14"/>
       </svg>KONKRED</span>
     <div class="nav-links">
-      <a href="#signals">Signals</a><a href="#work">Work</a><a href="#stack">Stack</a>
-      <a href="#log">Log</a><a href="#hire">Hire</a>
+      <a href="#signals">Signals</a><a href="#work">Work</a><a href="#services">Services</a>
+      <a href="#process">Process</a><a href="#domains">Domains</a><a href="#stack">Stack</a>
+      <a href="#log">Log</a><a href="#writing">Writing</a><a href="#hire">Hire</a>
     </div>
   </div>
 </nav>
@@ -289,20 +353,44 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;
     <div class="grid2" id="products"></div>
   </section>
 
+  <section id="services">
+    <div class="sec-head rv"><span class="sec-num">03</span><h2>Services</h2>
+      <span class="sec-note">What can be engaged</span></div>
+    <div id="services-list"></div>
+  </section>
+
+  <section id="process">
+    <div class="sec-head rv"><span class="sec-num">04</span><h2>How an engagement runs</h2>
+      <span class="sec-note">Scope to handover</span></div>
+    <div class="steps" id="steps"></div>
+  </section>
+
+  <section id="domains">
+    <div class="sec-head rv"><span class="sec-num">05</span><h2>Domains</h2>
+      <span class="sec-note">Where it has shipped</span></div>
+    <div class="domgrid" id="domains-grid"></div>
+  </section>
+
   <section id="stack">
-    <div class="sec-head rv"><span class="sec-num">03</span><h2>Stack</h2>
+    <div class="sec-head rv"><span class="sec-num">06</span><h2>Stack</h2>
       <span class="sec-note">What I build with</span></div>
     <div class="groups" id="groups"></div>
   </section>
 
   <section id="log">
-    <div class="sec-head rv"><span class="sec-num">04</span><h2>Build log</h2>
+    <div class="sec-head rv"><span class="sec-num">07</span><h2>Build log</h2>
       <span class="sec-note">Shipped, not planned</span></div>
     <div class="log" id="entries"></div>
   </section>
 
+  <section id="writing">
+    <div class="sec-head rv"><span class="sec-num">08</span><h2>Writing</h2>
+      <span class="sec-note">Selected manuscripts</span></div>
+    <div id="books"></div>
+  </section>
+
   <section id="hire">
-    <div class="sec-head rv"><span class="sec-num">05</span><h2>Hire</h2>
+    <div class="sec-head rv"><span class="sec-num">09</span><h2>Hire</h2>
       <span class="sec-note">Remote · async-first</span></div>
     <div class="hire">
       <div class="rv">
@@ -351,6 +439,48 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;
     secure:'<path d="M12 2 L20 5.6 V11.2 C20 16.4 16.6 20.2 12 22 C7.4 20.2 4 16.4 4 11.2 V5.6 Z"/><path d="M12 9.4 A2 2 0 1 1 12 13.4 A2 2 0 1 1 12 9.4 M12 13.4 V16.6"/>',
     docs:'<path d="M6 2.6 H14.2 L18.6 7 V21.4 H6 Z"/><path d="M14.2 2.6 V7 H18.6"/><path d="M9 12.2 H15.6 M9 15.2 H15.6 M9 18.2 H13.2"/>'
   };
+
+  var SERVICES = [
+    ["AI architecture","LLM system design, RAG pipelines, agent orchestration",
+     ["Discovery & scoping","Reference architecture","Eval harness","Handover docs"]],
+    ["Red team engagement","Adversarial testing against your deployed models",
+     ["Jailbreak surface map","Injection defence","Guardrail validation","Full report"]],
+    ["Cost engineering","Inference economics for production workloads",
+     ["COGS teardown","Caching strategy","Model routing","Measured savings"]],
+    ["Build sprint","Agents, bots, internal tools, automation pipelines",
+     ["Prototype in days","Production hardening","Monitoring","Runbook"]]
+  ];
+
+  var STEPS = [
+    ["Scope","Understand the system and the failure modes that actually matter"],
+    ["Model","Design the architecture, and write the evals before the code"],
+    ["Build","Ship a working prototype, then harden it for production"],
+    ["Break","Red team it, measure the cost, fix what falls over"],
+    ["Hand over","Documentation that matches reality, and a runbook"]
+  ];
+
+  var DOMAINS = [
+    ["Legal","contracts, compliance, discovery"],
+    ["Finance","modelling, risk, reporting"],
+    ["Engineering","specs, review, diagnostics"],
+    ["Healthcare","triage, documentation, coding"],
+    ["Heavy industry","maintenance, safety, ops"],
+    ["Marketing","research, copy, analytics"],
+    ["Logistics","routing, forecasting, tracking"],
+    ["Education","curriculum, assessment, tutoring"],
+    ["Security","threat intel, audit, response"],
+    ["Public sector","policy, records, service"]
+  ];
+
+  var BOOKS = [
+    ["Tame the Machine","Enterprise AI governance and deployment","1,000pp"],
+    ["Google AI Studio Goldmine","Economics and profitability of the Gemini era","19 ch"],
+    ["The Genesis Engine","Generative architecture for heavy industry","Arbitra"],
+    ["Prompting the Beast","Hallucination control and output steering","Manual"],
+    ["Quantum Engineering Reality","Quantum algorithms in practice with Qiskit","Qiskit"],
+    ["From Prompt to Power","Workflow patterns for conversational systems","Patterns"],
+    ["Revolutionizing SEO","Machine learning for digital strategy","Applied"]
+  ];
 
   var METRICS = [
     ["500+","Enterprise prompts","engineered, licensed, documented"],
@@ -420,6 +550,28 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;
     return '<div class="entry rv"><div class="h"><h3>'+esc(e[0])+'</h3>'+
       '<span class="st'+(e[3]?'':' done')+'">'+esc(e[2])+'</span></div>'+
       '<p>'+esc(e[1])+'</p></div>';
+  }).join("");
+
+  el("services-list").innerHTML = SERVICES.map(function(v,i){
+    return '<article class="srv rv"><div class="h"><h3>'+esc(v[0])+'</h3>'+
+      '<span class="n">0'+(i+1)+'</span></div><p>'+esc(v[1])+'</p><div class="chips">'+
+      v[2].map(function(c){return '<span class="chip">'+esc(c)+'</span>';}).join("")+
+      '</div></article>';
+  }).join("");
+
+  el("steps").innerHTML = STEPS.map(function(v,i){
+    return '<div class="step rv"><span class="n">0'+(i+1)+'</span><div class="dot"></div>'+
+      '<h3>'+esc(v[0])+'</h3><p>'+esc(v[1])+'</p></div>';
+  }).join("");
+
+  el("domains-grid").innerHTML = DOMAINS.map(function(v){
+    return '<div class="dom rv"><div class="t"><span class="ring"></span>'+
+      '<h3>'+esc(v[0])+'</h3></div><p>'+esc(v[1])+'</p></div>';
+  }).join("");
+
+  el("books").innerHTML = BOOKS.map(function(v){
+    return '<div class="book rv"><b>'+esc(v[0])+'</b><span>'+esc(v[1])+
+      '</span><i>'+esc(v[2])+'</i></div>';
   }).join("");
 
   /* ---- scroll reveal: every component fades in, staggered ---- */
