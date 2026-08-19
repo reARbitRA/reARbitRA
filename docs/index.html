@@ -240,20 +240,6 @@ a.val:hover{color:var(--signal)}
   transition:color .16s ease-out,border-color .16s ease-out}
 .srv:hover .chip{border-color:var(--line3);color:var(--clinical)}
 
-/* ---------- process ---------- */
-.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;
-  position:relative}
-.step{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:16px 16px 18px;
-  position:relative;transition:border-color .17s ease-out,transform .17s ease-out}
-.step:hover{border-color:var(--line3);transform:translateY(-2px)}
-.step .dot{width:9px;height:9px;border-radius:50%;background:var(--signal);margin-bottom:12px;
-  animation:sig 3.2s ease-in-out infinite}
-.step .n{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--mid);
-  position:absolute;top:16px;right:16px}
-.step h3{font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:1.6px;
-  color:var(--conc-lt);text-transform:uppercase;margin-bottom:6px}
-.step p{font-size:12.5px;color:var(--muted);line-height:1.6}
-
 /* ---------- domains ---------- */
 .domgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:12px}
 .dom{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:15px 16px;
@@ -284,6 +270,33 @@ a.val:hover{color:var(--signal)}
 .book i{font-family:var(--mono);font-size:10.5px;letter-spacing:1.6px;color:var(--signal);
   font-style:normal;flex:none}
 
+/* ---------- expandable detail panels ---------- */
+[data-exp]{cursor:pointer}
+[data-exp]:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.exp-cue{position:absolute;bottom:10px;right:12px;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:1.4px;color:var(--mid);text-transform:uppercase;
+  display:flex;align-items:center;gap:5px;transition:color .16s ease-out}
+.exp-cue::after{content:'+';font-size:13px;line-height:1;color:var(--signal)}
+[data-exp][aria-expanded="true"] .exp-cue::after{content:'\2212'}
+[data-exp]:hover .exp-cue{color:var(--clinical)}
+.detail{display:grid;grid-template-rows:0fr;overflow:hidden;
+  transition:grid-template-rows .32s ease-out}
+[aria-expanded="true"] + .detail,.detail.open{grid-template-rows:1fr}
+.detail-in{min-height:0;overflow:hidden}
+.detail-body{border-top:1px solid var(--line);margin-top:14px;padding-top:14px;
+  opacity:0;transform:translateY(-4px);transition:opacity .28s ease-out .04s,transform .28s ease-out .04s}
+.detail.open .detail-body{opacity:1;transform:none}
+.detail-body p{font-size:13.5px;color:var(--muted);margin-bottom:10px}
+.detail-body .kv{display:flex;gap:12px;padding:7px 0;border-bottom:1px solid var(--line);
+  font-size:13px;flex-wrap:wrap}
+.detail-body .kv:last-child{border-bottom:0}
+.detail-body .kv b{font-family:var(--mono);font-size:10.5px;letter-spacing:1.3px;
+  color:var(--signal);text-transform:uppercase;flex:0 0 130px;padding-top:2px}
+.detail-body .kv span{color:var(--muted);flex:1;min-width:180px}
+.detail-body ul{list-style:none;display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+.detail-body li{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--row);
+  border:1px solid var(--line2);padding:5px 10px;border-radius:2px}
+
 /* ---------- footer ---------- */
 footer{border-top:1px solid var(--line);padding:26px 0 40px;
   display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;
@@ -311,7 +324,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;
       </svg>KONKRED</span>
     <div class="nav-links">
       <a href="#signals">Signals</a><a href="#work">Work</a><a href="#services">Services</a>
-      <a href="#process">Process</a><a href="#domains">Domains</a><a href="#stack">Stack</a>
+      <a href="#domains">Domains</a><a href="#stack">Stack</a>
       <a href="#log">Log</a><a href="#writing">Writing</a><a href="#hire">Hire</a>
     </div>
   </div>
@@ -359,38 +372,32 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;
     <div id="services-list"></div>
   </section>
 
-  <section id="process">
-    <div class="sec-head rv"><span class="sec-num">04</span><h2>How an engagement runs</h2>
-      <span class="sec-note">Scope to handover</span></div>
-    <div class="steps" id="steps"></div>
-  </section>
-
   <section id="domains">
-    <div class="sec-head rv"><span class="sec-num">05</span><h2>Domains</h2>
+    <div class="sec-head rv"><span class="sec-num">04</span><h2>Domains</h2>
       <span class="sec-note">Where it has shipped</span></div>
     <div class="domgrid" id="domains-grid"></div>
   </section>
 
   <section id="stack">
-    <div class="sec-head rv"><span class="sec-num">06</span><h2>Stack</h2>
+    <div class="sec-head rv"><span class="sec-num">05</span><h2>Stack</h2>
       <span class="sec-note">What I build with</span></div>
     <div class="groups" id="groups"></div>
   </section>
 
   <section id="log">
-    <div class="sec-head rv"><span class="sec-num">07</span><h2>Build log</h2>
+    <div class="sec-head rv"><span class="sec-num">06</span><h2>Build log</h2>
       <span class="sec-note">Shipped, not planned</span></div>
     <div class="log" id="entries"></div>
   </section>
 
   <section id="writing">
-    <div class="sec-head rv"><span class="sec-num">08</span><h2>Writing</h2>
+    <div class="sec-head rv"><span class="sec-num">07</span><h2>Writing</h2>
       <span class="sec-note">Selected manuscripts</span></div>
     <div id="books"></div>
   </section>
 
   <section id="hire">
-    <div class="sec-head rv"><span class="sec-num">09</span><h2>Hire</h2>
+    <div class="sec-head rv"><span class="sec-num">08</span><h2>Hire</h2>
       <span class="sec-note">Remote · async-first</span></div>
     <div class="hire">
       <div class="rv">
@@ -441,22 +448,30 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;
   };
 
   var SERVICES = [
-    ["AI architecture","LLM system design, RAG pipelines, agent orchestration",
-     ["Discovery & scoping","Reference architecture","Eval harness","Handover docs"]],
-    ["Red team engagement","Adversarial testing against your deployed models",
-     ["Jailbreak surface map","Injection defence","Guardrail validation","Full report"]],
-    ["Cost engineering","Inference economics for production workloads",
-     ["COGS teardown","Caching strategy","Model routing","Measured savings"]],
-    ["Build sprint","Agents, bots, internal tools, automation pipelines",
-     ["Prototype in days","Production hardening","Monitoring","Runbook"]]
-  ];
-
-  var STEPS = [
-    ["Scope","Understand the system and the failure modes that actually matter"],
-    ["Model","Design the architecture, and write the evals before the code"],
-    ["Build","Ship a working prototype, then harden it for production"],
-    ["Break","Red team it, measure the cost, fix what falls over"],
-    ["Hand over","Documentation that matches reality, and a runbook"]
+    ["R&D / AI architecture","Applied research turned into deployable LLM systems",
+     ["RAG architecture","Hallucination mitigation","Multi-modal",
+      "Chain-of-Thought / ReAct","Agent orchestration"],
+     {"Focus":"Retrieval-augmented generation architecture and hallucination mitigation.",
+      "Prompt engineering":"Chain-of-Thought, ReAct, Few-Shot and multi-modal patterns.",
+      "Ecosystem":"Expert-level work across Google AI Studio and the Gemini model family."}],
+    ["LLM security / red teaming","Adversarial testing and defensive layers for production models",
+     ["Jailbreak taxonomy","Filter-bypass typing","Prompt injection defence",
+      "Data-leak mitigation","Enterprise chatbot hardening"],
+     {"Approach":"Emerging jailbreak techniques and LLM filter bypasses are systematically catalogued and typed.",
+      "Defensive work":"Defensive layers and protocols against prompt injection and sensitive data leakage.",
+      "Platform":"Delivered through Redeye, built in TypeScript and React."}],
+    ["Enterprise prompt licensing","500+ industrial-grade prompts, licensed and converted into tooling",
+     ["Arbitra Enterprise Library","Genesis Engine conversion","PRD / SDP authoring",
+      "Autonomous agents","Micro-tools"],
+     {"Library":"500+ engineered prompts across 10+ strategic domains.",
+      "Conversion":"Licensed prompts become autonomous agents and micro-tools via the Genesis Engine architecture.",
+      "Governance":"Konkred Audit methodology; ISO/IEC 42001 and EU AI Act alignment."}],
+    ["App & bot building","Full-stack delivery of AI tools with custom interfaces",
+     ["Python / FastAPI / Flask","React / TypeScript","Custom GUIs for AI tools",
+      "Marketplace deployment"],
+     {"Back end":"Python with FastAPI and Flask, plus core AI libraries.",
+      "Front end":"React, TypeScript and JavaScript \u2014 custom GUIs built for AI tools.",
+      "Lifecycle":"Technical validation, security audit, then marketplace deployment."}]
   ];
 
   var DOMAINS = [
@@ -464,12 +479,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;
     ["Finance","modelling, risk, reporting"],
     ["Engineering","specs, review, diagnostics"],
     ["Healthcare","triage, documentation, coding"],
-    ["Heavy industry","maintenance, safety, ops"],
-    ["Marketing","research, copy, analytics"],
-    ["Logistics","routing, forecasting, tracking"],
-    ["Education","curriculum, assessment, tutoring"],
-    ["Security","threat intel, audit, response"],
-    ["Public sector","policy, records, service"]
+    ["Heavy industry","maintenance, safety, ops"]
   ];
 
   var BOOKS = [
@@ -487,22 +497,38 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;
     ["367","Red-team techniques","catalogued and typed"],
     ["70%","Cost reduction","$20k to $6k infrastructure"],
     ["20+","Manuscripts","AI, security, quantum"],
-    ["04","Products shipped","audit · suite · redeye · arbitra"]
+    ["10+","Strategic domains","legal to heavy industry"]
   ];
 
   var PRODUCTS = [
     ["verify","Prompt certification","KONKRED Audit",
      "Audit prompts. Value them. Certify them. Structured evaluation, quality scoring and a compliance trail — proof an AI asset works before it ships.",
-     "audit · valuation · certification"],
+     "audit · valuation · certification",
+     {"What it does":"Applies seven advanced mathematical and logical formulas to score an engineered prompt for accuracy and assign it a financial valuation.",
+      "Why it exists":"Prompts are licensed and traded as assets, but nothing existed to price or certify them.",
+      "Output":"Accuracy score, financial valuation, certification, compliance trail.",
+      "Surface":["API","Dashboard","Certification record"]}],
     ["market","Micro-tool suite","KONKRED Enterprise",
      "Micro-tools built from enterprise-grade prompt systems across legal, finance, engineering and heavy industry. One input, concrete output.",
-     "micro-tools · enterprise prompts · multi-domain"],
+     "micro-tools · enterprise prompts · multi-domain",
+     {"What it does":"Turns licensed enterprise prompts into standalone micro-tools with custom interfaces, deployed to a marketplace.",
+      "Scale":"500+ industrial-grade prompts spanning 10+ strategic domains.",
+      "Model":"Commission-based marketplace.",
+      "Domains":["Legal","Finance","Engineering","Healthcare","Heavy industry"]}],
     ["secure","AI security","KONKRED Redeye",
      "Red teaming and AI security. Adversarial prompt testing, jailbreak surface mapping, guardrail validation. 367 techniques catalogued and typed.",
-     "red team · adversarial · guardrails"],
-    ["docs","Documentation","KONKRED Arbitra",
-     "Build documentation from code, from prompts, from systems that never had any. API references, runbooks and architecture notes — verified and versioned.",
-     "docs · api refs · runbooks"]
+     "red team · adversarial · guardrails",
+     {"What it does":"A proprietary security-testing platform for identifying vulnerabilities in large language models.",
+      "Built with":"TypeScript and React.",
+      "Method":"Emerging jailbreak techniques and LLM filter bypasses are systematically catalogued and typed, then used to harden enterprise-grade chatbots.",
+      "Defends against":["Prompt injection","Sensitive data leakage","Filter bypass","Adversarial extraction"]}],
+    ["docs","Enterprise licensing","KONKRED Arbitra",
+     "Enterprise prompt licensing and library. 500+ engineered prompts, converted into autonomous agents and micro-tools.",
+     "licensing · library · agents",
+     {"What it does":"The Arbitra Enterprise Library — 500+ industrial-grade engineered prompts, licensed for enterprise use.",
+      "Conversion":"Licensed prompts are orchestrated into autonomous AI agents and micro-tools through the Genesis Engine architecture.",
+      "Documentation":"PRD and SDP authoring for integrating LLMs into enterprise workflows.",
+      "Coverage":["10+ strategic domains","Legal","Finance","Engineering","Healthcare","Heavy industry"]}]
   ];
 
   var GROUPS = [
@@ -515,29 +541,64 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;
   ];
 
   var LOG = [
-    ["KONKRED Audit","Prompt certification engine. Seven mathematical and logical formulas for valuation, accuracy scoring and certification of AI intellectual property.","LIVE",1],
-    ["KONKRED Enterprise","Micro-tool marketplace. 500+ industrial-grade prompts across 10+ strategic domains, converted into autonomous agents via the Genesis Engine architecture.","LIVE",1],
-    ["KONKRED Redeye","LLM red-team platform in TypeScript and React. 367 adversarial techniques catalogued; defensive layers against prompt injection and data leakage.","LIVE",1],
-    ["KONKRED Arbitra","Documentation engine. API references, runbooks and architecture notes generated from code and prompts, then verified and versioned.","LIVE",1],
-    ["AI economics restructure","Reverse-engineered COGS for large-scale Gemini deployments. Context management and caching strategy cut spend from $20,000 to $6,000.","SHIPPED",0],
-    ["Brand system v2","Full identity, motion spec and static production site. No framework, sub-12KB JS, first paint under 1.2s.","SHIPPED",0]
+    ["KONKRED Audit","Prompt certification engine. Seven mathematical and logical formulas for valuation, accuracy scoring and certification of AI intellectual property.","LIVE",1,
+     {"Role":"Founder & Chief Technology Officer",
+      "Built":"Multi-functional SaaS ecosystem for deploying and commercialising AI assets.",
+      "Lifecycle":"Technical validation, security auditing, marketplace deployment."}],
+    ["KONKRED Enterprise","Micro-tool marketplace. 500+ industrial-grade prompts across 10+ strategic domains, converted into autonomous agents via the Genesis Engine architecture.","LIVE",1,
+     {"Marketplace":"Developers turn engineered prompts into micro-tools with custom GUIs.",
+      "Revenue":"Commission-based model.",
+      "Coverage":"10+ strategic domains."}],
+    ["KONKRED Redeye","LLM red-team platform in TypeScript and React. 367 adversarial techniques catalogued; defensive layers against prompt injection and data leakage.","LIVE",1,
+     {"Role":"AI Security Specialist & Penetration Tester",
+      "Method":"Systematic cataloguing and typing of emerging jailbreak techniques and filter bypasses.",
+      "Outcome":"Hardened enterprise-grade chatbots; defensive protocols against injection and data leakage."}],
+    ["KONKRED Arbitra","Enterprise prompt library. 500+ industrial-grade engineered prompts, licensed and converted into autonomous agents and micro-tools.","LIVE",1,
+     {"Role":"Senior AI System Architect",
+      "Library":"500+ industrial-grade engineered prompts.",
+      "Documentation":"PRD and SDP authoring for LLM integration into enterprise workflows."}],
+    ["AI economics restructure","Reverse-engineered COGS for large-scale Gemini deployments. Context management and caching strategy cut spend from $20,000 to $6,000.","SHIPPED",0,
+     {"Role":"AI Economist",
+      "Scope":"Reverse-engineered and optimised cost structures for Gemini 1.5 Pro and Flash.",
+      "Result":"70% reduction — $20,000 to $6,000 — via context management and caching."}]
   ];
 
   function esc(s){return String(s).replace(/[&<>]/g,function(c){
     return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];});}
   function el(id){return document.getElementById(id);}
 
+  function detailHTML(obj){
+    var rows = Object.keys(obj).map(function(k){
+      var v = obj[k];
+      var val = Array.isArray(v)
+        ? '<ul>'+v.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ul>'
+        : '<span>'+esc(v)+'</span>';
+      return '<div class="kv"><b>'+esc(k)+'</b>'+val+'</div>';
+    }).join("");
+    return '<div class="detail"><div class="detail-in"><div class="detail-body">'+
+           rows+'</div></div></div>';
+  }
+
+  function expandable(id){
+    return ' data-exp="'+id+'" role="button" tabindex="0" aria-expanded="false"' +
+           ' aria-controls="d-'+id+'"';
+  }
+
   el("metrics").innerHTML = METRICS.map(function(m){
     return '<div class="metric rv"><div class="v">'+esc(m[0])+'</div>'+
            '<div class="l">'+esc(m[1])+'</div><div class="s">'+esc(m[2])+'</div></div>';
   }).join("");
 
-  el("products").innerHTML = PRODUCTS.map(function(p){
-    return '<article class="card rv"><span class="corner"></span><div class="card-top">'+
+  el("products").innerHTML = PRODUCTS.map(function(p,i){
+    var id = "prod-"+i;
+    return '<article class="card rv"'+expandable(id)+'><span class="corner"></span><div class="card-top">'+
       '<svg viewBox="0 0 24 24" aria-hidden="true">'+ICON[p[0]]+'</svg><div>'+
       '<div class="tag">'+esc(p[1])+'</div><h3>'+esc(p[2])+'</h3></div></div>'+
       '<p>'+esc(p[3])+'</p><div class="meta"><span class="dot"></span>'+esc(p[4])+
-      '<span class="st">LIVE</span></div></article>';
+      '<span class="st">LIVE</span></div>'+
+      '<span class="exp-cue">Detail</span>'+
+      detailHTML(p[5]).replace('<div class="detail">','<div class="detail" id="d-'+id+'">')+
+      '</article>';
   }).join("");
 
   el("groups").innerHTML = GROUPS.map(function(g){
@@ -546,22 +607,25 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;
       '</div></div>';
   }).join("");
 
-  el("entries").innerHTML = LOG.map(function(e){
-    return '<div class="entry rv"><div class="h"><h3>'+esc(e[0])+'</h3>'+
+  el("entries").innerHTML = LOG.map(function(e,i){
+    var id = "log-"+i;
+    return '<div class="entry rv"'+expandable(id)+'><div class="h"><h3>'+esc(e[0])+'</h3>'+
       '<span class="st'+(e[3]?'':' done')+'">'+esc(e[2])+'</span></div>'+
-      '<p>'+esc(e[1])+'</p></div>';
+      '<p>'+esc(e[1])+'</p>'+
+      '<span class="exp-cue">Detail</span>'+
+      detailHTML(e[4]).replace('<div class="detail">','<div class="detail" id="d-'+id+'">')+
+      '</div>';
   }).join("");
 
   el("services-list").innerHTML = SERVICES.map(function(v,i){
-    return '<article class="srv rv"><div class="h"><h3>'+esc(v[0])+'</h3>'+
+    var id = "srv-"+i;
+    return '<article class="srv rv"'+expandable(id)+'><div class="h"><h3>'+esc(v[0])+'</h3>'+
       '<span class="n">0'+(i+1)+'</span></div><p>'+esc(v[1])+'</p><div class="chips">'+
       v[2].map(function(c){return '<span class="chip">'+esc(c)+'</span>';}).join("")+
-      '</div></article>';
-  }).join("");
-
-  el("steps").innerHTML = STEPS.map(function(v,i){
-    return '<div class="step rv"><span class="n">0'+(i+1)+'</span><div class="dot"></div>'+
-      '<h3>'+esc(v[0])+'</h3><p>'+esc(v[1])+'</p></div>';
+      '</div>'+
+      '<span class="exp-cue">Detail</span>'+
+      detailHTML(v[3]).replace('<div class="detail">','<div class="detail" id="d-'+id+'">')+
+      '</article>';
   }).join("");
 
   el("domains-grid").innerHTML = DOMAINS.map(function(v){
@@ -573,6 +637,38 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;
     return '<div class="book rv"><b>'+esc(v[0])+'</b><span>'+esc(v[1])+
       '</span><i>'+esc(v[2])+'</i></div>';
   }).join("");
+
+  /* ---- click / keyboard to expand a detail panel ---- */
+  function setOpen(host, open){
+    var panel = host.querySelector(".detail");
+    if(!panel) return;
+    host.setAttribute("aria-expanded", open ? "true" : "false");
+    panel.classList.toggle("open", open);
+  }
+
+  document.addEventListener("click", function(ev){
+    var host = ev.target.closest ? ev.target.closest("[data-exp]") : null;
+    if(!host) return;
+    if(ev.target.closest("a")) return;           // let real links through
+    setOpen(host, host.getAttribute("aria-expanded") !== "true");
+  });
+
+  document.addEventListener("keydown", function(ev){
+    if(ev.key !== "Enter" && ev.key !== " ") return;
+    var host = ev.target.closest ? ev.target.closest("[data-exp]") : null;
+    if(!host) return;
+    ev.preventDefault();
+    setOpen(host, host.getAttribute("aria-expanded") !== "true");
+  });
+
+  (function openFromHash(){
+    var h = location.hash.replace(/^#/, "");
+    if(!h) return;
+    var host = document.querySelector('[data-exp="'+h.replace(/"/g,"")+'"]');
+    if(!host) return;
+    setOpen(host, true);
+    if(typeof host.scrollIntoView === "function"){ host.scrollIntoView({block:"center"}); }
+  })();
 
   /* ---- scroll reveal: every component fades in, staggered ---- */
   var items = [].slice.call(document.querySelectorAll(".rv"));
@@ -594,8 +690,11 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;
   }
 
   /* ---- rotating role, typed ---- */
-  var ROLES = ["AI architect & consultant","R&D lead","LLM security / red teaming",
-               "Agent & bot builder","App builder","AI economics specialist"];
+  var ROLES = ["R&D · applied AI research & development",
+               "AI architect · RAG, agents, LLM systems",
+               "LLM security · red teaming & adversarial testing",
+               "Enterprise licensing · 500+ engineered prompts",
+               "App & bot builder · full-stack AI tooling"];
   var out = el("role");
   if(reduce){ out.textContent = ROLES[0]; }
   else {

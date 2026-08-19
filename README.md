@@ -9,7 +9,7 @@
 <div align="center">
 
 <a href="https://konkred.xyz">
-  <img src="./assets/header.svg" alt="Ari Miyanji — AI architect, research and development lead, LLM security" width="100%">
+  <img src="./assets/header.svg" alt="Ari Miyanji — R&amp;D, AI architect, LLM security, enterprise licensing, app and bot builder" width="100%">
 </a>
 
 <br>
@@ -25,7 +25,7 @@
 
 ## Signals
 
-<img src="./assets/metrics.svg" alt="500+ enterprise prompts · 367 red-team techniques · 70% cost reduction · 20+ manuscripts · 4 products shipped" width="100%">
+<img src="./assets/metrics.svg" alt="500+ enterprise prompts · 367 red-team techniques · 70% cost reduction · 20+ manuscripts · 10+ strategic domains" width="100%">
 
 <img src="./assets/divider.svg" alt="" width="100%">
 
@@ -37,19 +37,13 @@
 
 ## Services
 
-<img src="./assets/services.svg" alt="AI architecture, red team engagement, cost engineering, build sprint" width="100%">
-
-<img src="./assets/divider.svg" alt="" width="100%">
-
-## How an engagement runs
-
-<img src="./assets/process.svg" alt="Scope, model, build, break, hand over" width="100%">
+<img src="./assets/services.svg" alt="R&amp;D and AI architecture, LLM security and red teaming, enterprise prompt licensing, app and bot building" width="100%">
 
 <img src="./assets/divider.svg" alt="" width="100%">
 
 ## Domains
 
-<img src="./assets/domains.svg" alt="Legal, finance, engineering, healthcare, heavy industry, marketing, logistics, education, security, public sector" width="100%">
+<img src="./assets/domains.svg" alt="Legal, finance, engineering, healthcare, heavy industry" width="100%">
 
 <img src="./assets/divider.svg" alt="" width="100%">
 

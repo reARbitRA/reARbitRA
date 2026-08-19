@@ -32,10 +32,9 @@ setTimeout(() => {
     metrics: 5,
     products: 4,
     "services-list": 4,
-    steps: 5,
-    "domains-grid": 10,
+    "domains-grid": 5,
     groups: 6,
-    entries: 6,
+    entries: 5,
     books: 7,
   };
 
@@ -67,6 +66,43 @@ setTimeout(() => {
       bad++;
     }
   });
+
+  // expandable detail panels: 4 products + 4 services + 5 log entries
+  const hosts = d.querySelectorAll("[data-exp]");
+  const okExp = hosts.length === 13;
+  if (!okExp) bad++;
+  console.log(`  ${okExp ? "OK  " : "FAIL"} [data-exp]      ${hosts.length}/13`);
+
+  let panelBad = 0;
+  hosts.forEach((h) => {
+    const id = h.getAttribute("data-exp");
+    const panel = h.querySelector(".detail");
+    if (!panel || panel.id !== "d-" + id) panelBad++;
+    if (h.getAttribute("aria-expanded") !== "false") panelBad++;
+    if (!panel || !panel.querySelector(".kv")) panelBad++;
+  });
+  if (panelBad) { bad++; errors.push(panelBad + " detail panel wiring problems"); }
+  console.log(`  ${panelBad ? "FAIL" : "OK  "} panel wiring   ${hosts.length - panelBad}/${hosts.length}`);
+
+  // toggling
+  const first = hosts[0];
+  if (first) {
+    first.dispatchEvent(new dom.window.MouseEvent("click", { bubbles: true }));
+    const openOK = first.getAttribute("aria-expanded") === "true" &&
+                   first.querySelector(".detail").classList.contains("open");
+    const other = hosts[1];
+    const independent = other.getAttribute("aria-expanded") === "false";
+    first.dispatchEvent(new dom.window.MouseEvent("click", { bubbles: true }));
+    const closeOK = first.getAttribute("aria-expanded") === "false" &&
+                    !first.querySelector(".detail").classList.contains("open");
+    const kev = new dom.window.KeyboardEvent("keydown", { key: "Enter", bubbles: true });
+    first.dispatchEvent(kev);
+    const keyOK = first.getAttribute("aria-expanded") === "true";
+    first.dispatchEvent(new dom.window.MouseEvent("click", { bubbles: true }));
+    const t = openOK && closeOK && keyOK && independent;
+    if (!t) bad++;
+    console.log(`  ${t ? "OK  " : "FAIL"} toggle         open=${openOK} close=${closeOK} key=${keyOK} indep=${independent}`);
+  }
 
   const role = d.getElementById("role");
   console.log(`  role typed     ${JSON.stringify(role ? role.textContent : null)}`);

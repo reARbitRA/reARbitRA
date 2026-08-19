@@ -423,10 +423,11 @@ def sweep_defs(idp, color=SIGNAL, op=".55"):
 def build_header():
     w, h = 1200, 340
     roles = [
-        "AI architect  ·  research & development lead",
-        "LLM security  ·  red teaming & guardrail validation",
-        "App builder  ·  agents, bots, micro-tools",
-        "AI economics  ·  infrastructure & cost engineering",
+        "R&D  ·  applied AI research & development",
+        "AI architect  ·  RAG, agents, LLM systems",
+        "LLM security  ·  red teaming & adversarial testing",
+        "Enterprise licensing  ·  500+ engineered prompts",
+        "App & bot builder  ·  full-stack AI tooling",
     ]
     css = CUBE_CSS + f"""
   .rise {{ animation: rise .5s ease-out backwards; }}
@@ -436,15 +437,16 @@ def build_header():
   .r0 {{ animation-delay:.10s }} .r1 {{ animation-delay:.22s }}
   .r2 {{ animation-delay:.34s }} .r3 {{ animation-delay:.46s }}
   .r4 {{ animation-delay:.58s }} .r5 {{ animation-delay:.70s }}
-  .rot {{ animation: rot 15s linear infinite; }}
+  .rot {{ animation: rot 19s linear infinite; }}
   @keyframes rot {{
      0%   {{ opacity:0; transform: translateY(6px); }}
-     2.5% {{ opacity:1; transform: translateY(0); }}
-    22.5% {{ opacity:1; transform: translateY(0); }}
-    25%   {{ opacity:0; transform: translateY(-6px); }}
+     2%   {{ opacity:1; transform: translateY(0); }}
+    18%   {{ opacity:1; transform: translateY(0); }}
+    20%   {{ opacity:0; transform: translateY(-6px); }}
    100%   {{ opacity:0; transform: translateY(-6px); }} }}
-  .k0 {{ animation-delay:.9s }} .k1 {{ animation-delay:4.65s }}
-  .k2 {{ animation-delay:8.4s }} .k3 {{ animation-delay:12.15s }}
+  .k0 {{ animation-delay:.9s }} .k1 {{ animation-delay:4.7s }}
+  .k2 {{ animation-delay:8.5s }} .k3 {{ animation-delay:12.3s }}
+  .k4 {{ animation-delay:16.1s }}
   .rail {{ stroke-dasharray: 200 900; animation: railrun 9s linear infinite; }}
   @keyframes railrun {{ to {{ stroke-dashoffset: -1100; }} }}
   .live {{ animation: sig 2.4s ease-in-out infinite; }}
@@ -742,7 +744,7 @@ def build_metrics():
         ("367", "RED-TEAM TECHNIQUES", "catalogued and typed"),
         ("70%", "COST REDUCTION", "$20k to $6k infrastructure"),
         ("20+", "MANUSCRIPTS", "AI, security, quantum"),
-        ("04", "PRODUCTS SHIPPED", "audit · redeye · arbitra"),
+        ("10+", "STRATEGIC DOMAINS", "legal to heavy industry"),
     ]
     gap = 16
     n = len(stats)
@@ -797,7 +799,6 @@ def build_timeline():
         ("KONKRED Redeye", "LLM red-team platform in TypeScript and React. 367 adversarial techniques catalogued; defensive layers against prompt injection and data leakage.", "LIVE"),
         ("KONKRED Arbitra", "Documentation engine. API references, runbooks and architecture notes generated from code and prompts, then verified and versioned.", "LIVE"),
         ("AI economics restructure", "Reverse-engineered COGS for large-scale Gemini deployments. Context management and caching strategy cut spend from $20,000 to $6,000.", "SHIPPED"),
-        ("Brand system v2", "Full identity, motion spec and static production site. No framework, sub-12KB JS, first paint under 1.2s.", "SHIPPED"),
     ]
     w = 1200
     rh, gp = 88, 12
@@ -998,14 +999,18 @@ def build_badge(label, accent=False):
 # ==========================================================================
 def build_services():
     rows = [
-        ("AI ARCHITECTURE", "LLM system design, RAG pipelines, agent orchestration",
-         ["Discovery & scoping", "Reference architecture", "Eval harness", "Handover docs"]),
-        ("RED TEAM ENGAGEMENT", "Adversarial testing against your deployed models",
-         ["Jailbreak surface map", "Injection defence", "Guardrail validation", "Full report"]),
-        ("COST ENGINEERING", "Inference economics for production workloads",
-         ["COGS teardown", "Caching strategy", "Model routing", "Measured savings"]),
-        ("BUILD SPRINT", "Agents, bots, internal tools, automation pipelines",
-         ["Prototype in days", "Production hardening", "Monitoring", "Runbook"]),
+        ("R&D / AI ARCHITECTURE", "Applied research turned into deployable LLM systems",
+         ["RAG architecture", "Hallucination mitigation", "Multi-modal",
+          "Chain-of-Thought / ReAct", "Agent orchestration"]),
+        ("LLM SECURITY / RED TEAMING", "Adversarial testing and defensive layers for production models",
+         ["Jailbreak taxonomy", "Filter-bypass typing", "Prompt injection defence",
+          "Data-leak mitigation", "Enterprise chatbot hardening"]),
+        ("ENTERPRISE PROMPT LICENSING", "500+ industrial-grade prompts, licensed and converted into tooling",
+         ["Arbitra Enterprise Library", "Genesis Engine conversion", "PRD / SDP authoring",
+          "Autonomous agents", "Micro-tools"]),
+        ("APP & BOT BUILDING", "Full-stack delivery of AI tools with custom interfaces",
+         ["Python / FastAPI / Flask", "React / TypeScript", "Custom GUIs for AI tools",
+          "Marketplace deployment"]),
     ]
     w = 1200
     rh, gap = 132, 14
@@ -1075,11 +1080,6 @@ def build_domains():
         ("ENGINEERING", "specs, review, diagnostics"),
         ("HEALTHCARE", "triage, documentation, coding"),
         ("HEAVY INDUSTRY", "maintenance, safety, ops"),
-        ("MARKETING", "research, copy, analytics"),
-        ("LOGISTICS", "routing, forecasting, tracking"),
-        ("EDUCATION", "curriculum, assessment, tutoring"),
-        ("SECURITY", "threat intel, audit, response"),
-        ("PUBLIC SECTOR", "policy, records, service"),
     ]
     w = 1200
     cols, cwid, chh, gap = 5, 232, 96, 10
@@ -1115,73 +1115,6 @@ def build_domains():
         o.append(txt(42, 35, name, size, CONC_LT, MONO, "600", "1.8"))
         o.append(f'<line x1="16" y1="52" x2="{cwid-16}" y2="52" stroke="{LINE}" stroke-width="1"/>')
         o.append(txt(16, 72, sub, fit_size(sub, 11, cwid - 32, 0.2), MUTED, MONO, "400", "0.2"))
-        o.append('</g>')
-
-    o.append('</svg>')
-    return "".join(o)
-
-
-# ==========================================================================
-# 12. PROCESS — how an engagement runs
-# ==========================================================================
-def build_process():
-    steps = [
-        ("SCOPE", "Understand the system and the failure modes that matter"),
-        ("MODEL", "Design the architecture, write the evals before the code"),
-        ("BUILD", "Ship a working prototype, then harden it for production"),
-        ("BREAK", "Red team it, measure cost, fix what falls over"),
-        ("HAND OVER", "Documentation that matches reality, and a runbook"),
-    ]
-    w = 1200
-    h = 186
-    n = len(steps)
-    bw = (w - (n - 1) * 16) // n
-
-    css = f"""
-  .pstep {{ animation: psin .5s ease-out backwards; }}
-  @keyframes psin {{ from {{ opacity:0; transform: translateY(10px) }}
-                     to   {{ opacity:1; transform: none }} }}
-  .pflow {{ stroke-dasharray: 7 7; animation: pflow 1.4s linear infinite; }}
-  @keyframes pflow {{ to {{ stroke-dashoffset: -28 }} }}
-  .pdot {{ animation: pdot 3.2s ease-in-out infinite; }}
-  @keyframes pdot {{ 0%,100% {{ opacity:.3; r:4 }} 50% {{ opacity:1; r:5.4 }} }}
-  .pnum {{ animation: pn 5s ease-in-out infinite; }}
-  @keyframes pn {{ 0%,100% {{ opacity:.25 }} 50% {{ opacity:.8 }} }}
-{TYPED_CSS}"""
-
-    o = [head(w, h, "Process", "How an engagement runs, end to end.", css)]
-    o.append(f'<rect width="{w}" height="{h}" fill="{VOID}"/>')
-
-    ry = 54
-    o.append(f'<line x1="12" y1="{ry}" x2="{w-12}" y2="{ry}" stroke="{LINE}" stroke-width="1"/>')
-    o.append(f'<line class="pflow" x1="12" y1="{ry}" x2="{w-12}" y2="{ry}" '
-             f'stroke="{SIGNAL}" stroke-width="1.5" opacity=".75"/>')
-
-    for i, (name, body) in enumerate(steps):
-        x = i * (bw + 16)
-        d = 0.06 + i * 0.12
-        cxx = x + bw / 2
-        o.append(f'<g class="pstep" style="animation-delay:{d:.2f}s">')
-        o.append(f'<circle class="pdot" cx="{cxx}" cy="{ry}" r="4" fill="{SIGNAL}" '
-                 f'style="animation-delay:{i*0.4:.2f}s"/>')
-        o.append(f'<circle cx="{cxx}" cy="{ry}" r="9" fill="none" stroke="{LINE2}" stroke-width="1"/>')
-        o.append(txt(cxx, 30, f"0{i+1}", 11, MID, MONO, "500", "2", "middle", cls="pnum",
-                     extra=f' style="animation-delay:{i*0.5:.1f}s"'))
-        o.append(f'<rect x="{x}" y="{ry+26}" width="{bw}" height="{h-ry-38}" fill="{CARD}" '
-                 f'stroke="{LINE}" stroke-width="1" rx="3"/>')
-        o.append(typed(x + 14, ry + 52, name, 14, CONC_LT, MONO, "600", 1.6,
-                       start=d + 0.2, step=0.03))
-        # wrap body onto two lines
-        words, line, lines = body.split(), "", []
-        for wd in words:
-            t = (line + " " + wd).strip()
-            if mono_w(t, 10.5) > bw - 28 and line:
-                lines.append(line); line = wd
-            else:
-                line = t
-        lines.append(line)
-        for j, ln in enumerate(lines[:3]):
-            o.append(txt(x + 14, ry + 74 + j * 16, ln, 10.5, MUTED, MONO, "400", "0.1"))
         o.append('</g>')
 
     o.append('</svg>')
@@ -1255,7 +1188,6 @@ def main():
         "cube-k.svg":   render(build_mark),
         "services.svg": render(build_services),
         "domains.svg":  render(build_domains),
-        "process.svg":  render(build_process),
         "writing.svg":  render(build_writing),
         "badge-site.svg":    render(lambda: build_badge("konkred.xyz", True)),
         "badge-email.svg":   render(lambda: build_badge("ari@konkred.xyz")),
