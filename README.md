@@ -30,49 +30,49 @@
 
 <img src="./assets/divider.svg" alt="" width="100%">
 
-## Signals
+
 
 <img src="./assets/metrics.svg" alt="500+ enterprise prompts · 367 red-team techniques · 70% cost reduction · 20+ manuscripts · 10+ strategic domains" width="100%">
 
 <img src="./assets/divider.svg" alt="" width="100%">
 
-## Product suite
+
 
 <img src="./assets/products.svg" alt="KONKRED Audit, Enterprise, Redeye and Arbitra — the four product cards" width="100%">
 
 <img src="./assets/divider.svg" alt="" width="100%">
 
-## Services
+
 
 <img src="./assets/services.svg" alt="R&amp;D and AI architecture, LLM security and red teaming, enterprise prompt licensing, app and bot building" width="100%">
 
 <img src="./assets/divider.svg" alt="" width="100%">
 
-## Domains
+
 
 <img src="./assets/domains.svg" alt="Legal, finance, engineering, healthcare, heavy industry" width="100%">
 
 <img src="./assets/divider.svg" alt="" width="100%">
 
-## Stack
+
 
 <img src="./assets/stack.svg" alt="Capability groups: LLM engineering, AI security, build, AI economics, governance, advanced" width="100%">
 
 <img src="./assets/divider.svg" alt="" width="100%">
 
-## Build log
+
 
 <img src="./assets/timeline.svg" alt="Build log of shipped systems" width="100%">
 
 <img src="./assets/divider.svg" alt="" width="100%">
 
-## Writing
+
 
 <img src="./assets/writing.svg" alt="Selected manuscripts on AI governance, economics, security and quantum computing" width="100%">
 
 <img src="./assets/divider.svg" alt="" width="100%">
 
-## Working together
+
 
 <table>
 <tr>
@@ -116,7 +116,7 @@ README from six months ago.
 
 <br>
 
-**[konkred.xyz](https://konkred.xyz)** · **[ari@konkred.xyz](mailto:ari@konkred.xyz)** · **[Interactive profile](https://rearbitra.github.io/reARbitRA/)**
+**[konkred.xyz](https://konkred.xyz)** · **[ari@konkred.xyz](mailto:ari@konkred.xyz)** · 
 
 <sub>Concrete tools for abstract problems.</sub>
 
