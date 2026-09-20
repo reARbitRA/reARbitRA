@@ -1,6 +1,13 @@
 <!--
   KONKRED — profile README
-  Brand System v2 · Void #0B0F14 · Clinical #D7D9DD · Signal Amber #D98A2E
+  FACTORY FLOOR theme · Black #0A0908 · Red #D60019 · Ink #F4F1EB
+  Type: Archivo Black (display) · Special Elite (prose) · JetBrains Mono (machine)
+
+  A brutalist industrial dark theme: chalk-grained black canvas, deep-red
+  glowing hardware, typewriter-white interactive text. Red means signal and
+  live state, never danger. The background never glows — only foreground
+  objects ignite.
+
   Artwork is generated: `python3 tools/build_assets.py`
   Verified with:        `python3 tools/verify_assets.py`
   Do not hand-edit assets/*.svg — regenerate them.
@@ -112,5 +119,7 @@ README from six months ago.
 **[konkred.xyz](https://konkred.xyz)** · **[ari@konkred.xyz](mailto:ari@konkred.xyz)** · **[Interactive profile](https://rearbitra.github.io/reARbitRA/)**
 
 <sub>Concrete tools for abstract problems.</sub>
+
+<sub>KONKRED — Factory Floor · Black #0A0908 · Red #D60019 · Ink #F4F1EB</sub>
 
 </div>

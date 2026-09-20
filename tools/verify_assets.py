@@ -6,10 +6,15 @@ Checks, per asset:
   2. no external references (GitHub's proxy blocks scripts/network/webfonts,
      so anything external silently disappears)
   3. every character drawn by a <text> run exists in the embedded subset for
-     the face that run declares - i.e. the brand typography really renders
+     the face that run declares — i.e. the brand typography really renders
      rather than falling back to a generic system font
-  4. nothing starts fully transparent without an animation to bring it back
+  4. text stays inside the canvas, measured with the *real* per-glyph advances
+     of the shipped fonts (two of the three faces are proportional)
+  5. no two visible text runs collide at the same absolute point
+  6. nothing starts fully transparent without an animation to bring it back
      (a static rasteriser would render it blank)
+  7. theme guardrails: no blue/green/purple/amber anywhere, no pure #000 or
+     #fff, and no rounded rect corners outside the rivet dots
 
 Run: python3 tools/verify_assets.py
 """
@@ -25,12 +30,24 @@ import xml.dom.minidom
 from fontTools.ttLib import TTFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+
+import fontpack  # noqa: E402  (needs the path above)
 
 FACE_KEY = {
-    ("IBM Plex Mono", "400"): "plex400",
-    ("IBM Plex Mono", "500"): "plex500",
-    ("IBM Plex Mono", "600"): "plex600",
-    ("Inter", "400"): "inter400",
+    ("JetBrains Mono", "400"): "jb400",
+    ("JetBrains Mono", "500"): "jb500",
+    ("JetBrains Mono", "700"): "jb700",
+    ("JetBrains Mono", "800"): "jb800",
+    ("Special Elite", "400"): "elite400",
+    ("Archivo Black", "400"): "archivo400",
+}
+
+# first family in a font-family stack -> logical face prefix
+STACK_FACE = {
+    "JetBrains Mono": "jb",
+    "Special Elite": "elite400",
+    "Archivo Black": "archivo400",
 }
 
 FONT_FACE_RE = re.compile(
@@ -42,6 +59,19 @@ ATTR_RE = re.compile(r'(\w[\w-]*)="([^"]*)"')
 
 BANNED = ("<script", "<foreignObject", "xlink:href", "<image", "@import", "url(http")
 
+# 2.4 "There is no blue, green, purple or amber anywhere in the theme."
+# Every colour the theme permits, plus plain black/white used only inside
+# gradient stops and shadow rgba() where they are modulated by opacity.
+ALLOWED_HEX = {
+    "#0a0908", "#171514", "#0c0b0a", "#0d0c0b", "#100e0d",
+    "#d60019", "#ff1a2e", "#120d0c", "#161210", "#1a1010", "#3a201f", "#5c0a10",
+    "#f4f1eb", "#eae7e1", "#b7b2a9", "#8a857d", "#7a756d", "#5c5852", "#3d3835",
+    "#2a2624", "#262221", "#33302e", "#4a4640",
+    "#23201e", "#1a1817", "#141211",          # cube faces
+    "#000000", "#ffffff",                      # gradient stops / bevel shadow only
+}
+HEX_RE = re.compile(r"#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})\b")
+
 
 def unescape(s):
     return (s.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
@@ -49,10 +79,14 @@ def unescape(s):
 
 
 def face_of(stack, weight):
+    """Resolve a declared font-family stack + weight to a fontpack face key."""
     first = stack.split(",")[0].strip().strip("'\"")
-    if first == "Inter":
-        return "inter400"
-    return "plex" + (weight if weight in ("500", "600") else "400")
+    base = STACK_FACE.get(first)
+    if base is None:
+        return None
+    if base == "jb":
+        return "jb" + (weight if weight in ("500", "700", "800") else "400")
+    return base
 
 
 def check(path):
@@ -79,7 +113,6 @@ def check(path):
             problems.append(f"unexpected embedded face {fam} {wt}")
             continue
         font = TTFont(io.BytesIO(base64.b64decode(b64)))
-        # getBestCmap() is keyed by codepoint int - compare with ord(c)
         embedded[key] = set(font.getBestCmap())
 
     runs = 0
@@ -92,6 +125,9 @@ def check(path):
             continue
         runs += 1
         key = face_of(stack, weight)
+        if key is None:
+            problems.append(f"text declares an unknown family {stack!r}: {text[:40]!r}")
+            continue
         cov = embedded.get(key)
         if cov is None:
             problems.append(f"text uses {key} but no such face is embedded: {text[:40]!r}")
@@ -100,25 +136,29 @@ def check(path):
         if missing:
             problems.append(f"{key} missing glyphs {missing} for {text[:40]!r}")
 
-    # 4. mono text must stay inside the canvas (real Plex advance = 0.6em)
+    # 4. text must stay inside the canvas. Widths come from the real hmtx
+    #    tables, so proportional faces are measured exactly rather than
+    #    approximated with a monospace pitch.
     vb = re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', svg)
     if vb:
         cw = float(vb.group(1))
         for attrs_raw, body in TEXT_RE.findall(svg):
             a = dict(ATTR_RE.findall(attrs_raw))
-            if "Inter" in a.get("font-family", "").split(",")[0]:
-                continue  # proportional; not safely measurable here
+            key = face_of(a.get("font-family", ""), a.get("font-weight", "400"))
+            if key is None:
+                continue
             t = unescape(re.sub(r"<[^>]+>", "", body))
             if not t.strip():
                 continue
-            size = float(a.get("font-size", 13))
+            size = float(a.get("font-size", 12))
             ls = float(a.get("letter-spacing", 0) or 0)
             x = float(a.get("x", 0))
-            w_t = len(t) * size * 0.6 + max(0, len(t) - 1) * ls
+            w_t = fontpack.width(key, t, size, ls)
             anchor = a.get("text-anchor", "start")
             left = x if anchor == "start" else (x - w_t if anchor == "end" else x - w_t / 2)
             if left < -0.5 or left + w_t > cw + 0.5:
-                problems.append(f"text overflows canvas ({left:.0f}..{left+w_t:.0f} of {cw:.0f}): {t[:40]!r}")
+                problems.append(
+                    f"text overflows canvas ({left:.0f}..{left+w_t:.0f} of {cw:.0f}): {t[:40]!r}")
 
     # 5. no two visible text runs collide at the same absolute point.
     #    Positions are resolved through enclosing <g transform="translate(x,y)">
@@ -138,8 +178,8 @@ def check(path):
             tr = re.search(r'translate\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\)', g_attrs)
             dx, dy, ghost = depth_tx[-1]
             if tr:
-                dx += float(tr.group(1)); dy += float(tr.group(2))
-            # a group hidden with opacity="0" hides everything inside it
+                dx += float(tr.group(1))
+                dy += float(tr.group(2))
             if re.search(r'opacity="0"', g_attrs):
                 ghost = True
             depth_tx.append((dx, dy, ghost))
@@ -169,6 +209,16 @@ def check(path):
         if not cls or not re.search(r"animation:\s*\w+", svg):
             problems.append(f"element starts opacity=0 with no animation: {tag[:70]}")
 
+    # 7. theme guardrails
+    body_only = svg[svg.index("</style>"):] if "</style>" in svg else svg
+    for hx in set(HEX_RE.findall(svg)):
+        if hx.lower() not in ALLOWED_HEX:
+            problems.append(f"off-theme colour {hx} (no blue/green/purple/amber allowed)")
+    # 9.x "Panel radius: 0 everywhere — no rounded corners except .rivet dots"
+    for m in re.finditer(r'<rect\b[^>]*\brx="([\d.]+)"', body_only):
+        if float(m.group(1)) > 0:
+            problems.append(f"rounded corner rx={m.group(1)} — the theme has 0 radius")
+
     return name, runs, len(embedded), problems
 
 
@@ -182,14 +232,14 @@ def main():
         total += len(problems)
         status = "OK  " if not problems else "FAIL"
         size = os.path.getsize(path)
-        print(f"  {status} {name:<15} {size:>7,}B  faces={faces}  text_runs={runs}")
+        print(f"  {status} {name:<19} {size:>8,}B  faces={faces}  text_runs={runs}")
         for p in problems:
             print(f"         - {p}")
     print()
     if total:
         sys.exit(f"{total} problem(s) found")
-    print(f"All {len(files)} assets pass: valid XML, no external refs, "
-          f"full glyph coverage, nothing permanently invisible.")
+    print(f"All {len(files)} assets pass: valid XML, no external refs, full glyph "
+          f"coverage, in-canvas text, on-theme colour, nothing permanently invisible.")
 
 
 if __name__ == "__main__":

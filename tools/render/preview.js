@@ -26,12 +26,12 @@ if (!input || !output) {
 
 const svg = fs.readFileSync(input, "utf8");
 const resvg = new Resvg(svg, {
-  background: "#0B0F14",
+  background: "#0a0908",
   fitTo: { mode: "width", value: parseInt(widthArg || "1200", 10) },
   font: {
     loadSystemFonts: false,
     fontDirs: [path.join(os.homedir(), ".local/share/fonts")],
-    defaultFontFamily: "IBM Plex Mono",
+    defaultFontFamily: "JetBrains Mono",
   },
 });
 fs.writeFileSync(output, resvg.render().asPng());
