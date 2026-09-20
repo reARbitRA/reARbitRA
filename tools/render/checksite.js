@@ -108,6 +108,55 @@ setTimeout(() => {
   console.log(`  role typed     ${JSON.stringify(role ? role.textContent : null)}`);
   console.log(`  reveal targets ${d.querySelectorAll(".rv").length}`);
 
+  // ---- FACTORY FLOOR theme invariants ---------------------------------
+  const css = [...d.querySelectorAll("style")].map((n) => n.textContent).join("\n");
+
+  // 2.4 there is no blue, green, purple or amber anywhere in the theme
+  const palette = new Set([
+    "#0a0908", "#171514", "#0c0b0a", "#0d0c0b", "#100e0d",
+    "#d60019", "#ff1a2e", "#120d0c", "#161210", "#1a1010", "#3a201f", "#5c0a10",
+    "#f4f1eb", "#eae7e1", "#b7b2a9", "#8a857d", "#7a756d", "#5c5852", "#3d3835",
+    "#2a2624", "#262221", "#33302e", "#4a4640",
+    "#23201e", "#1a1817", "#141211", "#141210", "#000", "#fff",
+  ]);
+  const markup = d.documentElement.outerHTML.replace(/&#\d+;/g, "");
+  const offTheme = [...new Set((markup.match(/#[0-9a-fA-F]{3,6}\b/g) || [])
+    .map((h) => h.toLowerCase()))].filter((h) => !palette.has(h));
+  if (offTheme.length) { bad++; errors.push("off-theme colours: " + offTheme.join(" ")); }
+  console.log(`  ${offTheme.length ? "FAIL" : "OK  "} palette        ${offTheme.length} off-theme`);
+
+  // the three brand faces must all be declared and self-hosted
+  const faces = ["JetBrains Mono", "Special Elite", "Archivo Black"]
+    .filter((f) => css.includes(`font-family:'${f}'`));
+  const facesOK = faces.length === 3 && !/fonts\.googleapis|fonts\.gstatic/.test(css);
+  if (!facesOK) { bad++; errors.push("brand faces missing or loaded from a CDN"); }
+  console.log(`  ${facesOK ? "OK  " : "FAIL"} typefaces      ${faces.length}/3 self-hosted`);
+
+  // 9. panel radius is 0 everywhere; only .rivet dots are round
+  const radii = (css.match(/border-radius:\s*([^;}]+)/g) || [])
+    .filter((r) => !/50%|0\b/.test(r.split(":")[1]));
+  if (radii.length) { bad++; errors.push("rounded corners: " + radii.join(", ")); }
+  console.log(`  ${radii.length ? "FAIL" : "OK  "} radius         ${radii.length} rounded`);
+
+  // 8. the custom cursor must be removable — a touch visitor keeps theirs
+  const cursorOK = /hover:\s*none|hover:hover/.test(css) &&
+                   css.includes("prefers-reduced-motion") &&
+                   /removeChild\(reticle\)|reticle\.parentNode/.test(markup);
+  if (!cursorOK) { bad++; errors.push("custom cursor has no touch / reduced-motion fallback"); }
+  console.log(`  ${cursorOK ? "OK  " : "FAIL"} cursor guard   touch+reduced-motion fallback`);
+
+  // 5. every bench ignites from one .group, and the IN -> OUT row is mandatory
+  const benches = d.querySelectorAll(".bench");
+  let benchBad = 0;
+  benches.forEach((b) => {
+    if (!b.classList.contains("group")) benchBad++;
+    if (!b.querySelector(".io .keycap")) benchBad++;     // in -> out is required
+    if (!b.querySelector(".rail")) benchBad++;
+    if (!b.querySelector(".run")) benchBad++;
+  });
+  if (benchBad) { bad++; errors.push(benchBad + " bench anatomy problems"); }
+  console.log(`  ${benchBad ? "FAIL" : "OK  "} bench anatomy  ${benches.length} benches, in/out + rail + RUN`);
+
   if (errors.length) {
     console.log("\n" + errors.join("\n"));
   }
