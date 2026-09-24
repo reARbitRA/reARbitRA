@@ -30,66 +30,28 @@
 
 <img src="./assets/divider.svg" alt="" width="100%">
 
-
-
 <img src="./assets/metrics.svg" alt="500+ enterprise prompts · 367 red-team techniques · 70% cost reduction · 20+ manuscripts · 10+ strategic domains" width="100%">
 
 <img src="./assets/divider.svg" alt="" width="100%">
-
-
 
 <img src="./assets/products.svg" alt="KONKRED Audit, Enterprise, Redeye and Arbitra — the four product cards" width="100%">
 
 <img src="./assets/divider.svg" alt="" width="100%">
 
+<img src="./assets/field-log.svg" alt="Factory Floor field log of featured repositories" width="100%">
 
-
-## FIELD LOG
-
-<table>
-<tr>
-<td width="50%" valign="top">
-
-### PINNED / FEATURED
-
-<a href="https://github.com/reARbitRA/KONKRED"><img src="./assets/badge-profile.svg" alt="KONKRED" height="30"></a>
-<br><sub>AI executive protocols marketplace</sub>
-
-<br><br>
-
-<a href="https://github.com/reARbitRA/KONKRED-AUDIT"><img src="./assets/badge-site.svg" alt="KONKRED Audit" height="30"></a>
-<br><sub>Prompt evaluation, valuation and certification</sub>
-
-<br><br>
-
-<a href="https://github.com/reARbitRA/KONKRED-main--1-"><img src="./assets/badge-remote.svg" alt="KONKRED main" height="30"></a>
-<br><sub>Core KONKRED product surface</sub>
-
-</td>
-<td width="50%" valign="top">
-
-### PINNED / BUILD SYSTEMS
-
-<a href="https://github.com/reARbitRA/konkred-bots"><img src="./assets/badge-profile.svg" alt="konkred bots" height="30"></a>
-<br><sub>Telegram bot systems and automation</sub>
-
-<br><br>
-
-<a href="https://github.com/reARbitRA/SunoTelegram"><img src="./assets/badge-site.svg" alt="SunoTelegram" height="30"></a>
-<br><sub>Music download bot built with Python</sub>
-
-<br><br>
-
-<a href="https://github.com/reARbitRA/GSDF-LIVE"><img src="./assets/badge-remote.svg" alt="GSDF LIVE" height="30"></a>
-<br><sub>Script writer and social-deduction game platform</sub>
-
-</td>
-</tr>
-</table>
+<div align="center">
+<a href="https://github.com/reARbitRA/KONKRED"><img src="./assets/repo-konkred.svg" alt="KONKRED — AI executive protocols marketplace"></a>
+<a href="https://github.com/reARbitRA/KONKRED-AUDIT"><img src="./assets/repo-audit.svg" alt="KONKRED Audit — prompt certification"></a>
+<a href="https://github.com/reARbitRA/KONKRED-main--1-"><img src="./assets/repo-core.svg" alt="KONKRED Core"></a>
+<a href="https://github.com/reARbitRA/konkred-bots"><img src="./assets/repo-bots.svg" alt="KONKRED Bots"></a>
+<a href="https://github.com/reARbitRA/SunoTelegram"><img src="./assets/repo-suno.svg" alt="SunoTelegram"></a>
+<a href="https://github.com/reARbitRA/GSDF-LIVE"><img src="./assets/repo-gsdf.svg" alt="GSDF Live"></a>
+</div>
 
 <img src="./assets/divider.svg" alt="" width="100%">
 
-### CONTRIBUTION ACTIVITY / LIVE SIGNAL
+<img src="./assets/activity.svg" alt="Contribution activity signal" width="100%">
 
 <a href="https://github.com/reARbitRA" aria-label="Open reARbitRA GitHub profile">
   <img src="https://ghchart.rshah.org/d60019/reARbitRA" alt="GitHub contribution activity for reARbitRA" width="100%">
@@ -99,37 +61,25 @@
 
 <img src="./assets/divider.svg" alt="" width="100%">
 
-
-
 <img src="./assets/services.svg" alt="R&amp;D and AI architecture, LLM security and red teaming, enterprise prompt licensing, app and bot building" width="100%">
 
 <img src="./assets/divider.svg" alt="" width="100%">
-
-
 
 <img src="./assets/domains.svg" alt="Legal, finance, engineering, healthcare, heavy industry" width="100%">
 
 <img src="./assets/divider.svg" alt="" width="100%">
 
-
-
 <img src="./assets/stack.svg" alt="Capability groups: LLM engineering, AI security, build, AI economics, governance, advanced" width="100%">
 
 <img src="./assets/divider.svg" alt="" width="100%">
-
-
 
 <img src="./assets/timeline.svg" alt="Build log of shipped systems" width="100%">
 
 <img src="./assets/divider.svg" alt="" width="100%">
 
-
-
 <img src="./assets/writing.svg" alt="Selected manuscripts on AI governance, economics, security and quantum computing" width="100%">
 
 <img src="./assets/divider.svg" alt="" width="100%">
-
-
 
 <table>
 <tr>
@@ -166,18 +116,15 @@ README from six months ago.
 <img src="./assets/divider.svg" alt="" width="100%">
 
 <div align="center">
-
 <a href="mailto:ari@konkred.xyz">
   <img src="./assets/footer.svg" alt="Available for remote work — contract, fractional, advisory. ari@konkred.xyz" width="100%">
 </a>
 
 <br>
 
-**[konkred.xyz](https://konkred.xyz)** · **[ari@konkred.xyz](mailto:ari@konkred.xyz)** · 
-**[GitHub activity](https://github.com/reARbitRA)**
+**[konkred.xyz](https://konkred.xyz)** · **[ari@konkred.xyz](mailto:ari@konkred.xyz)** · **[GitHub activity](https://github.com/reARbitRA)**
 
 <sub>Concrete tools for abstract problems.</sub>
 
 <sub>KONKRED — Factory Floor · Black #0A0908 · Red #D60019 · Ink #F4F1EB</sub>
-
 </div>
