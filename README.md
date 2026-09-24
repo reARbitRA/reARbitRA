@@ -44,6 +44,63 @@
 
 
 
+## FIELD LOG
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### PINNED / FEATURED
+
+<a href="https://github.com/reARbitRA/KONKRED"><img src="./assets/badge-profile.svg" alt="KONKRED" height="30"></a>
+<br><sub>AI executive protocols marketplace</sub>
+
+<br><br>
+
+<a href="https://github.com/reARbitRA/KONKRED-AUDIT"><img src="./assets/badge-site.svg" alt="KONKRED Audit" height="30"></a>
+<br><sub>Prompt evaluation, valuation and certification</sub>
+
+<br><br>
+
+<a href="https://github.com/reARbitRA/KONKRED-main--1-"><img src="./assets/badge-remote.svg" alt="KONKRED main" height="30"></a>
+<br><sub>Core KONKRED product surface</sub>
+
+</td>
+<td width="50%" valign="top">
+
+### PINNED / BUILD SYSTEMS
+
+<a href="https://github.com/reARbitRA/konkred-bots"><img src="./assets/badge-profile.svg" alt="konkred bots" height="30"></a>
+<br><sub>Telegram bot systems and automation</sub>
+
+<br><br>
+
+<a href="https://github.com/reARbitRA/SunoTelegram"><img src="./assets/badge-site.svg" alt="SunoTelegram" height="30"></a>
+<br><sub>Music download bot built with Python</sub>
+
+<br><br>
+
+<a href="https://github.com/reARbitRA/GSDF-LIVE"><img src="./assets/badge-remote.svg" alt="GSDF LIVE" height="30"></a>
+<br><sub>Script writer and social-deduction game platform</sub>
+
+</td>
+</tr>
+</table>
+
+<img src="./assets/divider.svg" alt="" width="100%">
+
+### CONTRIBUTION ACTIVITY / LIVE SIGNAL
+
+<a href="https://github.com/reARbitRA" aria-label="Open reARbitRA GitHub profile">
+  <img src="https://ghchart.rshah.org/d60019/reARbitRA" alt="GitHub contribution activity for reARbitRA" width="100%">
+</a>
+
+<sub>LIVE CONTRIBUTION FEED · [OPEN PROFILE](https://github.com/reARbitRA) · [VIEW REPOSITORIES](https://github.com/reARbitRA?tab=repositories)</sub>
+
+<img src="./assets/divider.svg" alt="" width="100%">
+
+
+
 <img src="./assets/services.svg" alt="R&amp;D and AI architecture, LLM security and red teaming, enterprise prompt licensing, app and bot building" width="100%">
 
 <img src="./assets/divider.svg" alt="" width="100%">
@@ -117,6 +174,7 @@ README from six months ago.
 <br>
 
 **[konkred.xyz](https://konkred.xyz)** · **[ari@konkred.xyz](mailto:ari@konkred.xyz)** · 
+**[GitHub activity](https://github.com/reARbitRA)**
 
 <sub>Concrete tools for abstract problems.</sub>
 
